@@ -108,6 +108,12 @@ cd citadel
 - **Auto-Indexing** - Automatic content indexing and synchronization
 - **Advanced Filtering** - Complex search queries and filters
 
+### 📚 API Documentation & Query Building
+- **Auto-Generated API Docs** - Scramble for automatic OpenAPI documentation
+- **Elegant Query Builder** - Spatie Laravel Query Builder for flexible API queries
+- **Request Filtering** - Advanced filtering, sorting, and field selection
+- **API Versioning** - Built-in support for API versioning
+
 ### 🧪 Testing & Quality Assurance
 - **Pest PHP Framework** - Modern PHP testing with beautiful syntax
 - **Feature & Unit Tests** - Comprehensive test coverage
@@ -149,7 +155,9 @@ Citadel is built on top of carefully selected, production-tested packages:
 | `laravel/scout` | ^10.17 | Full-text search abstraction | [Docs](https://laravel.com/docs/scout) |
 | `spatie/laravel-medialibrary` | ^11.13 | Media file management | [Docs](https://spatie.be/docs/laravel-medialibrary) |
 | `spatie/laravel-permission` | ^6.21 | Role and permission management | [Docs](https://spatie.be/docs/laravel-permission) |
-| `predis/predis` | ^2.0 | Redis client for PHP | [Docs](https://github.com/predis/predis) |
+| `spatie/laravel-query-builder` | ^6.3 | Elegant API query builder | [Docs](https://spatie.be/docs/laravel-query-builder) |
+| `predis/predis` | ^3.1 | Redis client for PHP | [Docs](https://github.com/predis/predis) |
+| `dedoc/scramble` | ^0.12.26 | API documentation generator | [Docs](https://scramble.dedoc.co) |
 | `laravel/tinker` | ^2.10.1 | Interactive PHP REPL | [Docs](https://laravel.com/docs/artisan#tinker) |
 
 ### 🛠 Development & Testing Dependencies
@@ -170,7 +178,35 @@ Citadel is built on top of carefully selected, production-tested packages:
 | `axios` | ^1.8.2 | Promise-based HTTP client | [Docs](https://axios-http.com) |
 | `concurrently` | ^9.0.1 | Run multiple commands concurrently | [NPM](https://www.npmjs.com/package/concurrently) |
 
-## 🛠 Installation
+## � Package Installation
+
+You can install this boilerplate via Composer:
+
+```bash
+# Create a new project using Citadel
+composer create-project your-username/citadel-laravel-boilerplate my-project
+
+# Navigate to your project
+cd my-project
+
+# Set up the environment
+cp .env.example .env
+php artisan key:generate
+
+# Run database migrations
+php artisan migrate
+
+# Install Passport
+php artisan passport:install
+
+# Install frontend dependencies and build assets
+npm install && npm run build
+
+# Start development server
+composer run dev
+```
+
+## �🛠 Installation
 
 ### 📋 Prerequisites
 

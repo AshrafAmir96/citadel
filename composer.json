@@ -1,13 +1,39 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "ash/citadel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Citadel - A production-ready Laravel backend boilerplate with OAuth2, permissions, media management, and full-text search capabilities.",
     "keywords": [
         "laravel",
-        "framework"
+        "boilerplate",
+        "api",
+        "oauth2",
+        "passport",
+        "permissions",
+        "spatie",
+        "media",
+        "scout",
+        "search",
+        "redis",
+        "docker",
+        "pest",
+        "backend"
     ],
+    "homepage": "https://github.com/your-username/citadel-laravel-boilerplate",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "ash",
+            "email": "ashrafahmadamir@gmail.com",
+            "homepage": "https://owlfice.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/your-username/citadel-laravel-boilerplate/issues",
+        "source": "https://github.com/your-username/citadel-laravel-boilerplate",
+        "docs": "https://github.com/your-username/citadel-laravel-boilerplate#readme"
+    },
     "require": {
         "php": "^8.2",
         "dedoc/scramble": "^0.12.26",
