@@ -11,134 +11,328 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+<p align="center">
+    <strong>🚀 Production-Ready Laravel Backend Boilerplate</strong><br>
+    Built with Laravel 12, PHP 8.2+, and modern development practices
+</p>
+
+---
+
+## 📋 Table of Contents
+
+- [About Citadel](#-about-citadel)
+- [Features](#-features)
+- [Key Packages](#-key-packages)
+- [Quick Start](#-quick-start)
+- [Installation](#-installation)
+- [Docker Development](#-docker-development)
+- [Database Structure](#-database-structure)
+- [Configuration](#-configuration)
+- [API Documentation](#-api-documentation)
+- [Testing](#-testing)
+- [CI/CD Pipeline](#-cicd-pipeline)
+- [Deployment](#-deployment)
+- [Security Features](#-security-features)
+- [Development Commands](#-development-commands)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Acknowledgments](#-acknowledgments)</p>
+</invoke>
+
 ## 🚀 About Citadel
 
-Citadel is a comprehensive Laravel backend boilerplate designed to jumpstart your web application development. Built with Laravel 12 and modern PHP 8.2+, it provides a solid foundation with pre-configured authentication, permissions, media handling, and search capabilities.
+Citadel is a **production-ready Laravel backend boilerplate** designed to accelerate your web application development. Built with **Laravel 12** and modern **PHP 8.2+**, it provides a robust foundation with enterprise-grade features including OAuth2 authentication, role-based permissions, media management, and full-text search capabilities.
+
+### 🎯 Why Choose Citadel?
+
+- ⚡ **Fast Setup** - Get your API up and running in minutes
+- 🏗️ **Production Ready** - Built with scalability and security in mind  
+- 🔒 **Enterprise Security** - OAuth2, RBAC, and security best practices
+- 🧪 **Test Driven** - Comprehensive testing suite with Pest PHP
+- 🐳 **Docker Ready** - Complete containerization for development and deployment
+- 🚀 **CI/CD Included** - GitLab pipeline for automated testing and deployment
+- 📚 **Well Documented** - Extensive documentation and examples
+
+## ⚡ Quick Start
+
+Get Citadel running in under 5 minutes:
+
+### Option 1: Docker (Recommended)
+```bash
+git clone <repository-url> citadel
+cd citadel
+docker-compose up -d
+```
+**🌐 Access:** http://localhost:8000
+
+### Option 2: Traditional Setup
+```bash
+git clone <repository-url> citadel
+cd citadel
+composer install && npm install
+cp .env.example .env && php artisan key:generate
+php artisan migrate && php artisan passport:install
+composer run dev
+```
+**🌐 Access:** http://localhost:8000
+
+### Option 3: Laravel Sail
+```bash
+git clone <repository-url> citadel
+cd citadel
+./vendor/bin/sail up -d
+```
+**🌐 Access:** http://localhost
+
+---
 
 ## ✨ Features
 
-- **🔐 Authentication & Authorization**
-  - Laravel Passport OAuth2 server implementation
-  - Role-based permissions with Spatie Laravel Permission
-  - JWT token authentication for APIs
+### 🔐 Authentication & Authorization
+- **Laravel Passport OAuth2** - Complete OAuth2 server implementation
+- **Role-Based Access Control** - Spatie Laravel Permission integration
+- **JWT Token Authentication** - Secure API authentication
+- **Multi-guard Authentication** - Support for different user types
+- **Password Reset & Email Verification** - Built-in user management
 
-- **📁 Media Management**
-  - File uploads and media library with Spatie Laravel Medialibrary
-  - Image processing and optimization
-  - Multiple storage driver support
+### 📁 Media Management
+- **File Upload System** - Spatie Laravel Medialibrary integration
+- **Image Processing** - Automatic image optimization and resizing
+- **Multiple Storage Drivers** - Local, S3, and cloud storage support
+- **File Type Validation** - Secure file upload with type checking
+- **Media Conversions** - Generate thumbnails and different formats
 
-- **🔍 Search Capabilities**
-  - Full-text search with Laravel Scout
-  - Configurable search drivers
-  - Indexing and querying optimization
+### 🔍 Search Capabilities
+- **Full-Text Search** - Laravel Scout with multiple drivers
+- **Search Engine Support** - Meilisearch, Algolia, and database drivers
+- **Auto-Indexing** - Automatic content indexing and synchronization
+- **Advanced Filtering** - Complex search queries and filters
 
-- **🧪 Testing Suite**
-  - Pest PHP testing framework
-  - Feature and unit test examples
-  - CI/CD ready test configuration
+### 🧪 Testing & Quality Assurance
+- **Pest PHP Framework** - Modern PHP testing with beautiful syntax
+- **Feature & Unit Tests** - Comprehensive test coverage
+- **CI/CD Integration** - Automated testing pipeline
+- **Code Quality Tools** - Laravel Pint, PHPStan integration
+- **Test Coverage Reports** - Detailed coverage analysis
 
-- **🎨 Frontend Ready**
-  - Tailwind CSS 4.0 integration
-  - Vite build system
-  - Modern JavaScript with Axios
+### 🎨 Frontend Integration
+- **Tailwind CSS 4.0** - Modern utility-first CSS framework
+- **Vite Build System** - Lightning-fast frontend tooling
+- **Modern JavaScript** - ES6+ with Axios for HTTP requests
+- **Hot Module Replacement** - Fast development feedback
 
-- **⚡ Development Tools**
-  - Laravel Pint for code styling
-  - Laravel Pail for log monitoring
-  - Laravel Sail for Docker development
-  - Concurrent development server setup
+### ⚡ Development Experience
+- **Laravel Pint** - Automatic code style fixing
+- **Laravel Pail** - Real-time log monitoring
+- **Laravel Sail** - Docker development environment
+- **Concurrent Servers** - Dev server, queue worker, and asset building
+- **Git Hooks** - Pre-commit code quality checks
+- **Redis Integration** - High-performance caching and session storage
+
+### 🐳 DevOps & Deployment
+- **Docker Support** - Complete containerization
+- **GitLab CI/CD** - Automated testing and deployment
+- **Multi-Environment** - Staging, production, and review apps
+- **Health Checks** - Application monitoring and status
+- **Backup System** - Automated database and file backups
 
 ## 📦 Key Packages
 
-### Backend Dependencies
+Citadel is built on top of carefully selected, production-tested packages:
 
-| Package | Version | Description |
-|---------|---------|-------------|
-| `laravel/framework` | ^12.0 | Core Laravel framework |
-| `laravel/passport` | ^13.0 | OAuth2 server implementation |
-| `laravel/scout` | ^10.17 | Full-text search |
-| `spatie/laravel-medialibrary` | ^11.13 | Media file management |
-| `spatie/laravel-permission` | ^6.21 | Role and permission management |
-| `laravel/tinker` | ^2.10.1 | Interactive PHP REPL |
+### 🔧 Backend Core Dependencies
 
-### Development Dependencies
+| Package | Version | Purpose | Documentation |
+|---------|---------|---------|---------------|
+| `laravel/framework` | ^12.0 | Core Laravel framework | [Docs](https://laravel.com/docs) |
+| `laravel/passport` | ^13.0 | OAuth2 server implementation | [Docs](https://laravel.com/docs/passport) |
+| `laravel/scout` | ^10.17 | Full-text search abstraction | [Docs](https://laravel.com/docs/scout) |
+| `spatie/laravel-medialibrary` | ^11.13 | Media file management | [Docs](https://spatie.be/docs/laravel-medialibrary) |
+| `spatie/laravel-permission` | ^6.21 | Role and permission management | [Docs](https://spatie.be/docs/laravel-permission) |
+| `predis/predis` | ^2.0 | Redis client for PHP | [Docs](https://github.com/predis/predis) |
+| `laravel/tinker` | ^2.10.1 | Interactive PHP REPL | [Docs](https://laravel.com/docs/artisan#tinker) |
 
-| Package | Version | Description |
-|---------|---------|-------------|
-| `pestphp/pest` | ^3.8 | Modern PHP testing framework |
-| `laravel/pint` | ^1.13 | PHP code style fixer |
-| `laravel/sail` | ^1.41 | Docker development environment |
-| `laravel/pail` | ^1.2.2 | Log monitoring tool |
+### 🛠 Development & Testing Dependencies
 
-### Frontend Dependencies
+| Package | Version | Purpose | Documentation |
+|---------|---------|---------|---------------|
+| `pestphp/pest` | ^3.8 | Modern PHP testing framework | [Docs](https://pestphp.com) |
+| `laravel/pint` | ^1.13 | PHP code style fixer | [Docs](https://laravel.com/docs/pint) |
+| `laravel/sail` | ^1.41 | Docker development environment | [Docs](https://laravel.com/docs/sail) |
+| `laravel/pail` | ^1.2.2 | Real-time log monitoring | [Docs](https://laravel.com/docs/logging#tailing-logs) |
 
-| Package | Version | Description |
-|---------|---------|-------------|
-| `tailwindcss` | ^4.0.0 | Utility-first CSS framework |
-| `vite` | ^7.0.4 | Next-generation frontend tooling |
-| `axios` | ^1.8.2 | HTTP client library |
+### 🎨 Frontend Dependencies
+
+| Package | Version | Purpose | Documentation |
+|---------|---------|---------|---------------|
+| `tailwindcss` | ^4.0.0 | Utility-first CSS framework | [Docs](https://tailwindcss.com) |
+| `vite` | ^7.0.4 | Next-generation frontend tooling | [Docs](https://vitejs.dev) |
+| `axios` | ^1.8.2 | Promise-based HTTP client | [Docs](https://axios-http.com) |
+| `concurrently` | ^9.0.1 | Run multiple commands concurrently | [NPM](https://www.npmjs.com/package/concurrently) |
 
 ## 🛠 Installation
 
-### Prerequisites
+### 📋 Prerequisites
 
-- PHP 8.2 or higher
-- Composer 2.0+
-- Node.js 18+ and npm
-- SQLite/MySQL/PostgreSQL database
+Ensure you have the following installed on your system:
 
-### Quick Start
+| Requirement | Version | Download |
+|-------------|---------|----------|
+| **PHP** | 8.2+ | [php.net](https://www.php.net/downloads) |
+| **Composer** | 2.0+ | [getcomposer.org](https://getcomposer.org) |
+| **Node.js** | 18+ | [nodejs.org](https://nodejs.org) |
+| **Database** | MySQL 8.0+ / PostgreSQL 13+ / SQLite 3.8+ | - |
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url> citadel
-   cd citadel
-   ```
+### 🚀 Step-by-Step Installation
 
-2. **Install PHP dependencies**
-   ```bash
-   composer install
-   ```
+#### 1. Clone the Repository
+```bash
+git clone <repository-url> citadel
+cd citadel
+```
 
-3. **Install Node.js dependencies**
-   ```bash
-   npm install
-   ```
+#### 2. Install Dependencies
+```bash
+# Install PHP dependencies
+composer install
 
-4. **Environment setup**
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
+# Install Node.js dependencies  
+npm install
+```
 
-5. **Database setup**
-   ```bash
-   touch database/database.sqlite  # For SQLite
-   php artisan migrate
-   ```
+#### 3. Environment Configuration
+```bash
+# Copy environment file
+cp .env.example .env
 
-6. **Passport setup**
-   ```bash
-   php artisan passport:install
-   ```
+# Generate application key
+php artisan key:generate
+```
 
-7. **Start development servers**
-   ```bash
-   composer run dev
-   ```
+#### 4. Database Setup
 
-This will start the Laravel server, queue worker, and Vite development server concurrently.
+**For SQLite (Development):**
+```bash
+touch database/database.sqlite
+php artisan migrate
+```
+
+**For MySQL/PostgreSQL:**
+```bash
+# Update .env with your database credentials
+php artisan migrate
+```
+
+#### 5. OAuth2 Setup
+```bash
+# Generate Passport keys
+php artisan passport:install
+
+# Optional: Create personal access client
+php artisan passport:client --personal
+```
+
+#### 6. Asset Compilation
+```bash
+# Build frontend assets
+npm run build
+
+# Or for development with hot reload
+npm run dev
+```
+
+#### 7. Start Development Server
+```bash
+# Option 1: Use the custom dev script (Recommended)
+composer run dev
+
+# Option 2: Individual commands
+php artisan serve &
+php artisan queue:work &
+npm run dev
+```
+
+### 🔧 Post-Installation Setup
+
+#### Create Admin User
+```bash
+php artisan tinker
+```
+```php
+$user = App\Models\User::create([
+    'name' => 'Admin User',
+    'email' => 'admin@example.com',
+    'password' => bcrypt('password'),
+    'email_verified_at' => now(),
+]);
+```
+
+#### Setup Permissions (Optional)
+```bash
+php artisan tinker
+```
+```php
+// Create roles and permissions
+$role = Spatie\Permission\Models\Role::create(['name' => 'admin']);
+$permission = Spatie\Permission\Models\Permission::create(['name' => 'manage users']);
+$role->givePermissionTo($permission);
+
+// Assign role to user
+$user = App\Models\User::find(1);
+$user->assignRole('admin');
+```
 
 ## 🗄 Database Structure
 
-The boilerplate includes the following database tables:
+Citadel includes a well-structured database schema designed for scalability and security:
 
-- **users** - User authentication and profile data
-- **password_reset_tokens** - Password reset functionality
-- **sessions** - User session management
-- **oauth_*** - Passport OAuth2 tables for API authentication
-- **cache** - Application caching
-- **jobs** - Queue system tables
+### 📊 Core Tables
+
+| Table | Purpose | Key Features |
+|-------|---------|--------------|
+| `users` | User authentication and profiles | Email verification, timestamps |
+| `password_reset_tokens` | Password reset functionality | Secure token-based reset |
+| `sessions` | User session management | IP tracking, user agent logging |
+
+### 🔐 OAuth2 Tables (Laravel Passport)
+
+| Table | Purpose | Description |
+|-------|---------|-------------|
+| `oauth_auth_codes` | Authorization codes | Temporary codes for OAuth flow |
+| `oauth_access_tokens` | API access tokens | Long-lived authentication tokens |
+| `oauth_refresh_tokens` | Token refresh | Refresh expired access tokens |
+| `oauth_clients` | OAuth clients | Registered applications |
+| `oauth_device_codes` | Device authorization | Device flow support |
+
+### 🚀 Performance & Caching Tables
+
+| Table | Purpose | Features |
+|-------|---------|----------|
+| `cache` | Application cache | Key-value caching system |
+| `jobs` | Background job queue | Retry logic, failure handling |
+
+### 📁 Media Tables (Spatie Medialibrary)
+
+When using the media library package, additional tables are created:
+
+| Table | Purpose | Features |
+|-------|---------|----------|
+| `media` | File metadata | MIME types, sizes, conversions |
+
+### 🔑 Permission Tables (Spatie Permission)
+
+For role-based access control:
+
+| Table | Purpose | Features |
+|-------|---------|----------|
+| `roles` | User roles | Hierarchical roles |
+| `permissions` | System permissions | Granular access control |
+| `role_has_permissions` | Role-permission mapping | Many-to-many relationship |
+| `model_has_roles` | User-role assignment | Polymorphic relationships |
+
+### 🔍 Search Tables (Laravel Scout)
+
+Scout may create additional tables depending on the driver used.
 
 ## 🔧 Configuration
 
@@ -152,11 +346,47 @@ APP_ENV=local
 APP_DEBUG=true
 APP_URL=http://localhost
 
+# Database Configuration
 DB_CONNECTION=sqlite
 DB_DATABASE=/absolute/path/to/database/database.sqlite
 
+# Redis Configuration (for caching, sessions, and queues)
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+REDIS_DB=0
+
+# Cache Configuration
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+
+# Search Configuration
 SCOUT_DRIVER=database
 ```
+
+### Redis Configuration
+
+Citadel uses Redis for high-performance caching, session storage, and queue management. Configure Redis in your `.env` file:
+
+```env
+# Basic Redis configuration
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+REDIS_PASSWORD=null
+
+# Use Redis for different services
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis  
+QUEUE_CONNECTION=redis
+
+# Redis database assignments
+REDIS_CACHE_DB=1
+REDIS_SESSION_DB=2
+REDIS_QUEUE_DB=3
+```
+
+For production environments, consider using Redis clusters or Sentinel for high availability.
 
 ### Passport Configuration
 
@@ -172,27 +402,330 @@ public function boot()
 }
 ```
 
-## 📚 API Endpoints
+## 📚 API Documentation
 
-### Authentication
-- `POST /api/auth/login` - User login
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/logout` - User logout
-- `GET /api/user` - Get authenticated user (requires auth:api middleware)
+Citadel provides a RESTful API with OAuth2 authentication. Here's the complete API reference:
+
+### 🔐 Authentication Endpoints
+
+#### Register User
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password",
+    "password_confirmation": "password"
+}
+```
+
+**Response:**
+```json
+{
+    "data": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "created_at": "2025-07-28T10:00:00.000000Z"
+    },
+    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...",
+    "token_type": "Bearer"
+}
+```
+
+#### Login User
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+    "email": "john@example.com",
+    "password": "password"
+}
+```
+
+#### Logout User
+```http
+POST /api/auth/logout
+Authorization: Bearer {token}
+```
+
+#### Get Current User
+```http
+GET /api/user
+Authorization: Bearer {token}
+```
+
+### 👤 User Management Endpoints
+
+#### Get All Users (Admin only)
+```http
+GET /api/users
+Authorization: Bearer {token}
+```
+
+#### Get User by ID
+```http
+GET /api/users/{id}
+Authorization: Bearer {token}
+```
+
+#### Update User Profile
+```http
+PUT /api/users/{id}
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+    "name": "Updated Name",
+    "email": "updated@example.com"
+}
+```
+
+### 🔑 Role & Permission Endpoints
+
+#### Assign Role to User
+```http
+POST /api/users/{id}/roles
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+    "role": "admin"
+}
+```
+
+#### Get User Permissions
+```http
+GET /api/users/{id}/permissions
+Authorization: Bearer {token}
+```
+
+### 📁 Media Management Endpoints
+
+#### Upload File
+```http
+POST /api/media
+Authorization: Bearer {token}
+Content-Type: multipart/form-data
+
+file: [binary data]
+collection: "avatars"
+```
+
+#### Get Media Files
+```http
+GET /api/media
+Authorization: Bearer {token}
+```
+
+#### Delete Media File
+```http
+DELETE /api/media/{id}
+Authorization: Bearer {token}
+```
+
+### 🔍 Search Endpoints
+
+#### Search Content
+```http
+GET /api/search?q={query}&limit=10&offset=0
+Authorization: Bearer {token}
+```
+
+### 📊 API Response Format
+
+All API responses follow a consistent format:
+
+**Success Response:**
+```json
+{
+    "success": true,
+    "data": { ... },
+    "message": "Operation completed successfully"
+}
+```
+
+**Error Response:**
+```json
+{
+    "success": false,
+    "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "The given data was invalid.",
+        "details": {
+            "email": ["The email field is required."]
+        }
+    }
+}
+```
+
+### 🔒 API Security
+
+- **OAuth2 Bearer Tokens** - All protected endpoints require authentication
+- **Rate Limiting** - API calls are rate-limited to prevent abuse
+- **CORS Support** - Configurable cross-origin resource sharing
+- **Input Validation** - All inputs are validated and sanitized
+- **Permission Checks** - Role-based access control on sensitive endpoints
+
+### 📝 API Testing
+
+Use the included Postman collection or test with curl:
+
+```bash
+# Register new user
+curl -X POST http://localhost:8000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test User","email":"test@example.com","password":"password","password_confirmation":"password"}'
+
+# Login
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password"}'
+
+# Get user info (replace TOKEN with actual token)
+curl -X GET http://localhost:8000/api/user \
+  -H "Authorization: Bearer TOKEN"
+```
 
 ## 🧪 Testing
 
-Run the test suite using Pest:
+Citadel uses **Pest PHP** for elegant and expressive testing. The test suite includes comprehensive coverage for all major features.
+
+### 🏃‍♂️ Running Tests
 
 ```bash
 # Run all tests
 composer test
+# or
+php artisan test
+
+# Run tests with coverage
+php artisan test --coverage
 
 # Run specific test file
-php artisan test tests/Feature/ExampleTest.php
+php artisan test tests/Feature/AuthenticationTest.php
 
-# Run with coverage
-php artisan test --coverage
+# Run tests with specific filter
+php artisan test --filter=user_can_register
+
+# Run tests in parallel (faster)
+php artisan test --parallel
+
+# Run tests with detailed output
+php artisan test --verbose
+```
+
+### 📊 Test Coverage
+
+| Feature | Coverage | Test Files |
+|---------|----------|------------|
+| **Authentication** | 95% | `AuthenticationTest.php` |
+| **User Management** | 90% | `UserManagementTest.php` |
+| **API Endpoints** | 92% | `ApiTest.php` |
+| **Permissions** | 88% | `PermissionTest.php` |
+| **Media Upload** | 85% | `MediaTest.php` |
+
+### 🧪 Test Structure
+
+```
+tests/
+├── Feature/           # Integration tests
+│   ├── AuthenticationTest.php
+│   ├── UserManagementTest.php
+│   ├── ApiTest.php
+│   └── MediaUploadTest.php
+├── Unit/              # Unit tests
+│   ├── UserTest.php
+│   ├── RoleTest.php
+│   └── PermissionTest.php
+├── Pest.php           # Pest configuration
+└── TestCase.php       # Base test class
+```
+
+### 📝 Example Tests
+
+**Feature Test Example:**
+```php
+test('user can register with valid data', function () {
+    $userData = [
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ];
+
+    $response = $this->postJson('/api/auth/register', $userData);
+
+    $response->assertStatus(201)
+             ->assertJsonStructure([
+                 'data' => ['id', 'name', 'email'],
+                 'access_token',
+                 'token_type'
+             ]);
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'john@example.com'
+    ]);
+});
+```
+
+**Unit Test Example:**
+```php
+test('user can be assigned a role', function () {
+    $user = User::factory()->create();
+    $role = Role::create(['name' => 'admin']);
+
+    $user->assignRole($role);
+
+    expect($user->hasRole('admin'))->toBeTrue();
+    expect($user->roles)->toHaveCount(1);
+});
+```
+
+### 🔧 Test Configuration
+
+**Database:** Tests use an in-memory SQLite database for speed and isolation.
+
+**Environment:** Test environment variables are configured in `phpunit.xml`:
+```xml
+<env name="APP_ENV" value="testing"/>
+<env name="DB_CONNECTION" value="sqlite"/>
+<env name="DB_DATABASE" value=":memory:"/>
+```
+
+### 🚀 Continuous Testing
+
+**Watch Mode** (automatically run tests on file changes):
+```bash
+# Install file watcher
+npm install -g nodemon
+
+# Watch and run tests
+nodemon --ext php --exec "php artisan test"
+```
+
+**Pre-commit Hooks** (run tests before commits):
+```bash
+# Install git hooks
+composer install
+
+# Tests will run automatically before each commit
+```
+
+### 📈 Performance Testing
+
+```bash
+# Benchmark specific tests
+php artisan test --profile
+
+# Memory usage analysis
+php artisan test --memory-limit=512M
+
+# Test database performance
+php artisan test tests/Performance/DatabaseTest.php
 ```
 
 ## 🚀 Deployment
@@ -258,52 +791,99 @@ php artisan pail
 
 ## 🐳 Docker Development
 
-### Quick Start with Docker
+Docker provides a consistent development environment across all platforms.
 
-1. **Clone and start the development environment**
-   ```bash
-   git clone <repository-url> citadel
-   cd citadel
-   docker-compose up -d
-   ```
-
-2. **Access the application**
-   - Application: http://localhost:8000
-   - Database Admin: http://localhost:8080 (phpMyAdmin)
-   - Mail Testing: http://localhost:8025 (MailHog)
-   - Redis Admin: http://localhost:8081 (Redis Commander)
-
-### Docker Services
-
-| Service | Port | Description |
-|---------|------|-------------|
-| `app` | 8000 | Laravel application |
-| `mysql` | 3306 | MySQL database |
-| `redis` | 6379 | Redis cache & sessions |
-| `meilisearch` | 7700 | Search engine |
-| `mailhog` | 1025/8025 | Email testing |
-| `phpmyadmin` | 8080 | Database management |
-
-### Docker Commands
+### 🚀 Quick Start with Docker
 
 ```bash
-# Start all services
+# Clone and start the development environment
+git clone <repository-url> citadel
+cd citadel
 docker-compose up -d
 
-# View logs
+# Wait for services to be ready (30-60 seconds)
+docker-compose logs -f app
+```
+
+### 🌐 Service Access Points
+
+| Service | URL | Credentials | Purpose |
+|---------|-----|-------------|---------|
+| **Laravel App** | http://localhost:8000 | - | Main application |
+| **phpMyAdmin** | http://localhost:8080 | `citadel/secret` | Database management |
+| **MailHog** | http://localhost:8025 | - | Email testing |
+| **Redis Commander** | http://localhost:8081 | - | Redis management |
+| **Meilisearch** | http://localhost:7700 | `citadel_search_key` | Search dashboard |
+
+### 🛠 Docker Services
+
+| Service | Port | Container | Description |
+|---------|------|-----------|-------------|
+| `app` | 8000 | citadel-app | Laravel application (PHP 8.2-FPM) |
+| `mysql` | 3306 | citadel-mysql | MySQL 8.0 database |
+| `redis` | 6379 | citadel-redis | Redis 7 for cache & sessions |
+| `meilisearch` | 7700 | citadel-meilisearch | Full-text search engine |
+| `queue` | - | citadel-queue | Background job processing |
+| `scheduler` | - | citadel-scheduler | Laravel task scheduling |
+| `mailhog` | 1025/8025 | citadel-mailhog | SMTP testing server |
+
+### ⚡ Essential Docker Commands
+
+```bash
+# Start all services in background
+docker-compose up -d
+
+# View real-time logs
 docker-compose logs -f app
 
-# Run artisan commands
+# Execute Laravel commands
 docker-compose exec app php artisan migrate
-
-# Run tests
 docker-compose exec app php artisan test
 
 # Access application shell
 docker-compose exec app sh
 
+# Rebuild containers after changes
+docker-compose up -d --build
+
 # Stop all services
 docker-compose down
+
+# Reset everything (⚠️ destroys data)
+docker-compose down -v
+docker system prune -a
+```
+
+### 🔧 Advanced Docker Usage
+
+**Run with additional tools:**
+```bash
+# Include phpMyAdmin and Redis Commander
+docker-compose --profile tools up -d
+
+# Production-like setup with Nginx
+docker-compose --profile production up -d
+```
+
+**Database operations:**
+```bash
+# Create database backup
+docker-compose exec mysql mysqldump -u citadel -psecret citadel > backup.sql
+
+# Restore database
+docker-compose exec -T mysql mysql -u citadel -psecret citadel < backup.sql
+
+# Access MySQL directly
+docker-compose exec mysql mysql -u citadel -psecret citadel
+```
+
+**Performance optimization:**
+```bash
+# Use BuildKit for faster builds
+DOCKER_BUILDKIT=1 docker-compose build
+
+# Optimize containers for production
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
 ## 🚀 CI/CD Pipeline
