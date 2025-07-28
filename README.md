@@ -899,7 +899,15 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    docker-compose build app
    ```
 
-2. **Permission errors in containers**
+2. **SQLite extension compilation fails**
+   ```bash
+   # Error: Package 'sqlite3' not found
+   # This is fixed by including sqlite-dev in the Dockerfile
+   # If you see this error, rebuild with no cache:
+   docker-compose build --no-cache app
+   ```
+
+3. **Permission errors in containers**
    ```bash
    # Fix file permissions
    sudo chown -R $(id -u):$(id -g) .
@@ -908,7 +916,7 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    docker-compose up -d --build
    ```
 
-3. **Database connection issues**
+4. **Database connection issues**
    ```bash
    # Check if MySQL is ready
    docker-compose logs mysql
@@ -918,12 +926,22 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    docker-compose restart app
    ```
 
-4. **Port conflicts**
+5. **Port conflicts**
    ```bash
    # Check what's using the ports
    netstat -tulpn | grep :8000
    
    # Stop conflicting services or change ports in docker-compose.yml
+   ```
+
+6. **Container build failures**
+   ```bash
+   # Clean up Docker cache and rebuild
+   docker system prune -a
+   docker-compose build --no-cache
+   
+   # If still failing, check Docker resources
+   docker system df
    ```
 
 ## 🚀 CI/CD Pipeline
