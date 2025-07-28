@@ -178,6 +178,104 @@ Citadel is built on top of carefully selected, production-tested packages:
 | `axios` | ^1.8.2 | Promise-based HTTP client | [Docs](https://axios-http.com) |
 | `concurrently` | ^9.0.1 | Run multiple commands concurrently | [NPM](https://www.npmjs.com/package/concurrently) |
 
+## 🛠 Implementation Status
+
+### ✅ Completed Features
+
+| Component | Status | Description |
+|-----------|--------|-------------|
+| **API Routes** | ✅ Complete | All routes defined in `routes/api.php` |
+| **Authentication Controller** | ✅ Complete | Register, login, logout, current user |
+| **User Management Controller** | ✅ Complete | CRUD operations with permission checks |
+| **Media Controller** | ✅ Complete | File upload, list, and delete operations |
+| **Search Controller** | ✅ Complete | Laravel Scout integration for user search |
+| **API Documentation Controller** | ✅ Complete | Endpoint overview and documentation |
+| **User Model Extensions** | ✅ Complete | Passport, Permissions, Media, Search traits |
+| **Database Migrations** | ✅ Published | Permission and Media Library migrations |
+| **API Tests** | ✅ Complete | Comprehensive authentication API tests |
+| **Consistent Response Format** | ✅ Complete | Standardized JSON responses with error handling |
+
+### 🏗️ Controllers Created
+
+1. **`AuthController`** - Authentication endpoints
+   - `register()` - User registration with validation
+   - `login()` - User authentication with OAuth2
+   - `logout()` - Token revocation
+   - `user()` - Get current authenticated user
+
+2. **`UserController`** - User management endpoints
+   - `index()` - List all users (admin only)
+   - `show()` - Get user by ID (with permission checks)
+   - `update()` - Update user profile (with permission checks)
+   - `assignRole()` - Assign role to user (admin only)
+   - `permissions()` - Get user permissions
+
+3. **`MediaController`** - File management endpoints
+   - `store()` - Upload files with validation (10MB limit)
+   - `index()` - List user's media files
+   - `destroy()` - Delete media files
+
+4. **`SearchController`** - Search functionality
+   - `search()` - Search users with Laravel Scout
+
+5. **`ApiDocumentationController`** - API documentation
+   - `index()` - Overview of all available endpoints
+
+### 🚧 Next Steps Required
+
+To complete the setup and start using the API:
+
+1. **Database Setup**
+   ```bash
+   # Configure database in .env file
+   # For MySQL:
+   DB_CONNECTION=mysql
+   DB_DATABASE=citadel
+   DB_USERNAME=root
+   DB_PASSWORD=your_password
+   
+   # Run migrations
+   php artisan migrate
+   ```
+
+2. **Install Passport**
+   ```bash
+   php artisan passport:install
+   ```
+
+3. **Create Initial Admin User**
+   ```bash
+   php artisan tinker
+   ```
+   ```php
+   $user = App\Models\User::create([
+       'name' => 'Admin User',
+       'email' => 'admin@example.com',
+       'password' => bcrypt('password'),
+       'email_verified_at' => now(),
+   ]);
+   
+   // Create admin role and permission
+   $role = Spatie\Permission\Models\Role::create(['name' => 'admin']);
+   $permission = Spatie\Permission\Models\Permission::create(['name' => 'manage users']);
+   $role->givePermissionTo($permission);
+   $user->assignRole('admin');
+   ```
+
+4. **Test the API**
+   ```bash
+   # Start the server
+   php artisan serve
+   
+   # Run tests
+   composer test
+   
+   # Test endpoints with curl or Postman
+   curl -X GET http://localhost:8000/api/
+   ```
+
+## 📦 Package Installation
+
 ## � Package Installation
 
 You can install this boilerplate via Composer:
@@ -440,7 +538,17 @@ public function boot()
 
 ## 📚 API Documentation
 
-Citadel provides a RESTful API with OAuth2 authentication. Here's the complete API reference:
+Citadel provides a comprehensive RESTful API with OAuth2 authentication using Laravel Passport. All API endpoints follow consistent response formats and include proper error handling.
+
+### 🚀 Quick API Overview
+
+Access the API documentation endpoint for a complete overview:
+
+```http
+GET /api/
+```
+
+This returns a JSON response with all available endpoints and their descriptions.
 
 ### 🔐 Authentication Endpoints
 
@@ -452,14 +560,15 @@ Content-Type: application/json
 {
     "name": "John Doe",
     "email": "john@example.com",
-    "password": "password",
-    "password_confirmation": "password"
+    "password": "password123",
+    "password_confirmation": "password123"
 }
 ```
 
-**Response:**
+**Success Response (201):**
 ```json
 {
+    "success": true,
     "data": {
         "id": 1,
         "name": "John Doe",
@@ -467,7 +576,23 @@ Content-Type: application/json
         "created_at": "2025-07-28T10:00:00.000000Z"
     },
     "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...",
-    "token_type": "Bearer"
+    "token_type": "Bearer",
+    "message": "User registered successfully"
+}
+```
+
+**Error Response (422):**
+```json
+{
+    "success": false,
+    "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "The given data was invalid.",
+        "details": {
+            "email": ["The email has already been taken."],
+            "password": ["The password confirmation does not match."]
+        }
+    }
 }
 ```
 
@@ -478,7 +603,34 @@ Content-Type: application/json
 
 {
     "email": "john@example.com",
-    "password": "password"
+    "password": "password123"
+}
+```
+
+**Success Response (200):**
+```json
+{
+    "success": true,
+    "data": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "created_at": "2025-07-28T10:00:00.000000Z"
+    },
+    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...",
+    "token_type": "Bearer",
+    "message": "User logged in successfully"
+}
+```
+
+**Error Response (401):**
+```json
+{
+    "success": false,
+    "error": {
+        "code": "AUTHENTICATION_ERROR",
+        "message": "Invalid credentials"
+    }
 }
 ```
 
@@ -488,10 +640,34 @@ POST /api/auth/logout
 Authorization: Bearer {token}
 ```
 
+**Success Response (200):**
+```json
+{
+    "success": true,
+    "message": "User logged out successfully"
+}
+```
+
 #### Get Current User
 ```http
 GET /api/user
 Authorization: Bearer {token}
+```
+
+**Success Response (200):**
+```json
+{
+    "success": true,
+    "data": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "email_verified_at": "2025-07-28T10:00:00.000000Z",
+        "created_at": "2025-07-28T10:00:00.000000Z",
+        "updated_at": "2025-07-28T10:00:00.000000Z"
+    },
+    "message": "User retrieved successfully"
+}
 ```
 
 ### 👤 User Management Endpoints
@@ -502,10 +678,67 @@ GET /api/users
 Authorization: Bearer {token}
 ```
 
+**Success Response (200):**
+```json
+{
+    "success": true,
+    "data": {
+        "current_page": 1,
+        "data": [
+            {
+                "id": 1,
+                "name": "John Doe",
+                "email": "john@example.com",
+                "created_at": "2025-07-28T10:00:00.000000Z"
+            }
+        ],
+        "per_page": 15,
+        "total": 1
+    },
+    "message": "Users retrieved successfully"
+}
+```
+
+**Error Response (403 - Permission Denied):**
+```json
+{
+    "success": false,
+    "error": {
+        "code": "PERMISSION_DENIED",
+        "message": "You do not have permission to access this resource."
+    }
+}
+```
+
 #### Get User by ID
 ```http
 GET /api/users/{id}
 Authorization: Bearer {token}
+```
+
+**Success Response (200):**
+```json
+{
+    "success": true,
+    "data": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "created_at": "2025-07-28T10:00:00.000000Z"
+    },
+    "message": "User retrieved successfully"
+}
+```
+
+**Error Response (404 - Not Found):**
+```json
+{
+    "success": false,
+    "error": {
+        "code": "USER_NOT_FOUND",
+        "message": "User not found."
+    }
+}
 ```
 
 #### Update User Profile
@@ -517,6 +750,21 @@ Content-Type: application/json
 {
     "name": "Updated Name",
     "email": "updated@example.com"
+}
+```
+
+**Success Response (200):**
+```json
+{
+    "success": true,
+    "data": {
+        "id": 1,
+        "name": "Updated Name",
+        "email": "updated@example.com",
+        "created_at": "2025-07-28T10:00:00.000000Z",
+        "updated_at": "2025-07-28T11:00:00.000000Z"
+    },
+    "message": "User updated successfully"
 }
 ```
 
@@ -533,10 +781,53 @@ Content-Type: application/json
 }
 ```
 
+**Success Response (200):**
+```json
+{
+    "success": true,
+    "data": {
+        "user": {
+            "id": 1,
+            "name": "John Doe",
+            "email": "john@example.com"
+        },
+        "roles": ["admin"]
+    },
+    "message": "Role assigned successfully"
+}
+```
+
+**Error Response (422 - Invalid Role):**
+```json
+{
+    "success": false,
+    "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "The given data was invalid.",
+        "details": {
+            "role": ["The selected role is invalid."]
+        }
+    }
+}
+```
+
 #### Get User Permissions
 ```http
 GET /api/users/{id}/permissions
 Authorization: Bearer {token}
+```
+
+**Success Response (200):**
+```json
+{
+    "success": true,
+    "data": {
+        "roles": ["admin", "editor"],
+        "permissions": ["manage users", "edit posts", "view dashboard"],
+        "direct_permissions": ["manage users"]
+    },
+    "message": "User permissions retrieved successfully"
+}
 ```
 
 ### 📁 Media Management Endpoints
@@ -551,16 +842,98 @@ file: [binary data]
 collection: "avatars"
 ```
 
+**Success Response (201):**
+```json
+{
+    "success": true,
+    "data": {
+        "id": 1,
+        "name": "avatar.jpg",
+        "file_name": "avatar.jpg",
+        "mime_type": "image/jpeg",
+        "size": 2048576,
+        "collection_name": "avatars",
+        "url": "http://localhost:8000/storage/media/1/avatar.jpg",
+        "created_at": "2025-07-28T10:00:00.000000Z"
+    },
+    "message": "File uploaded successfully"
+}
+```
+
+**Error Response (422 - File Too Large):**
+```json
+{
+    "success": false,
+    "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "The given data was invalid.",
+        "details": {
+            "file": ["The file may not be greater than 10240 kilobytes."]
+        }
+    }
+}
+```
+
+**Error Response (500 - Upload Failed):**
+```json
+{
+    "success": false,
+    "error": {
+        "code": "UPLOAD_ERROR",
+        "message": "File upload failed: Disk full"
+    }
+}
+```
+
 #### Get Media Files
 ```http
 GET /api/media
 Authorization: Bearer {token}
 ```
 
+**Success Response (200):**
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "name": "avatar.jpg",
+            "file_name": "avatar.jpg",
+            "mime_type": "image/jpeg",
+            "size": 2048576,
+            "collection_name": "avatars",
+            "url": "http://localhost:8000/storage/media/1/avatar.jpg",
+            "created_at": "2025-07-28T10:00:00.000000Z"
+        }
+    ],
+    "message": "Media files retrieved successfully"
+}
+```
+
 #### Delete Media File
 ```http
 DELETE /api/media/{id}
 Authorization: Bearer {token}
+```
+
+**Success Response (200):**
+```json
+{
+    "success": true,
+    "message": "Media file deleted successfully"
+}
+```
+
+**Error Response (404 - Media Not Found):**
+```json
+{
+    "success": false,
+    "error": {
+        "code": "MEDIA_NOT_FOUND",
+        "message": "Media file not found."
+    }
+}
 ```
 
 ### 🔍 Search Endpoints
@@ -571,20 +944,35 @@ GET /api/search?q={query}&limit=10&offset=0
 Authorization: Bearer {token}
 ```
 
-### 📊 API Response Format
+**Parameters:**
+- `q` (required): Search query string (1-255 characters)
+- `limit` (optional): Number of results to return (1-100, default: 10)
+- `offset` (optional): Number of results to skip (default: 0)
 
-All API responses follow a consistent format:
-
-**Success Response:**
+**Success Response (200):**
 ```json
 {
     "success": true,
-    "data": { ... },
-    "message": "Operation completed successfully"
+    "data": {
+        "results": [
+            {
+                "type": "user",
+                "id": 1,
+                "name": "John Doe",
+                "email": "john@example.com",
+                "created_at": "2025-07-28T10:00:00.000000Z"
+            }
+        ],
+        "query": "john",
+        "limit": 10,
+        "offset": 0,
+        "total": 1
+    },
+    "message": "Search completed successfully"
 }
 ```
 
-**Error Response:**
+**Error Response (422 - Invalid Query):**
 ```json
 {
     "success": false,
@@ -592,38 +980,145 @@ All API responses follow a consistent format:
         "code": "VALIDATION_ERROR",
         "message": "The given data was invalid.",
         "details": {
-            "email": ["The email field is required."]
+            "q": ["The q field is required."]
         }
     }
 }
 ```
 
+**Error Response (500 - Search Failed):**
+```json
+{
+    "success": false,
+    "error": {
+        "code": "SEARCH_ERROR",
+        "message": "Search failed: Search service unavailable"
+    }
+}
+```
+
+### 📊 API Response Format
+
+All API responses follow a consistent JSON structure for both success and error cases:
+
+**Success Response Structure:**
+```json
+{
+    "success": true,
+    "data": { /* Response data */ },
+    "message": "Operation completed successfully"
+}
+```
+
+**Error Response Structure:**
+```json
+{
+    "success": false,
+    "error": {
+        "code": "ERROR_CODE",
+        "message": "Human-readable error message",
+        "details": { /* Additional error details, typically validation errors */ }
+    }
+}
+```
+
+**Common Error Codes:**
+- `VALIDATION_ERROR` - Input validation failed (422)
+- `AUTHENTICATION_ERROR` - Invalid credentials (401)
+- `PERMISSION_DENIED` - Insufficient permissions (403)
+- `USER_NOT_FOUND` - User does not exist (404)
+- `MEDIA_NOT_FOUND` - Media file does not exist (404)
+- `UPLOAD_ERROR` - File upload failed (500)
+- `SEARCH_ERROR` - Search operation failed (500)
+
+**HTTP Status Codes:**
+- `200` - Success
+- `201` - Created (for registration and file uploads)
+- `401` - Unauthorized (authentication required)
+- `403` - Forbidden (insufficient permissions)
+- `404` - Not Found
+- `422` - Unprocessable Entity (validation errors)
+- `500` - Internal Server Error
+
 ### 🔒 API Security
 
-- **OAuth2 Bearer Tokens** - All protected endpoints require authentication
-- **Rate Limiting** - API calls are rate-limited to prevent abuse
-- **CORS Support** - Configurable cross-origin resource sharing
-- **Input Validation** - All inputs are validated and sanitized
-- **Permission Checks** - Role-based access control on sensitive endpoints
+- **OAuth2 Bearer Tokens** - All protected endpoints require valid Bearer token authentication
+- **Role-Based Access Control** - Permission checks on sensitive operations (user management)
+- **Input Validation** - All request data is validated using Laravel's form request validation
+- **Rate Limiting** - API calls are rate-limited to prevent abuse (configurable)
+- **CORS Support** - Cross-origin resource sharing with configurable origins
+- **CSRF Protection** - Built-in CSRF token validation for web routes
+- **SQL Injection Prevention** - Eloquent ORM with parameter binding
+- **XSS Protection** - Automatic output escaping and input sanitization
 
 ### 📝 API Testing
 
-Use the included Postman collection or test with curl:
+#### Using cURL
 
+**Register a new user:**
 ```bash
-# Register new user
 curl -X POST http://localhost:8000/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"name":"Test User","email":"test@example.com","password":"password","password_confirmation":"password"}'
+  -d '{
+    "name": "Test User",
+    "email": "test@example.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+  }'
+```
 
-# Login
+**Login:**
+```bash
 curl -X POST http://localhost:8000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password"}'
+  -d '{
+    "email": "test@example.com",
+    "password": "password123"
+  }'
+```
 
-# Get user info (replace TOKEN with actual token)
+**Get user info (replace TOKEN with actual token):**
+```bash
 curl -X GET http://localhost:8000/api/user \
   -H "Authorization: Bearer TOKEN"
+```
+
+**Upload a file:**
+```bash
+curl -X POST http://localhost:8000/api/media \
+  -H "Authorization: Bearer TOKEN" \
+  -F "file=@/path/to/your/file.jpg" \
+  -F "collection=uploads"
+```
+
+**Search users:**
+```bash
+curl -X GET "http://localhost:8000/api/search?q=john&limit=5" \
+  -H "Authorization: Bearer TOKEN"
+```
+
+#### Using Postman
+
+1. Create a new collection called "Citadel API"
+2. Set up environment variables:
+   - `baseUrl`: `http://localhost:8000`
+   - `token`: `{{access_token}}` (will be set after login)
+3. Create requests for each endpoint using the examples above
+4. Use the login request to automatically set the token for subsequent requests
+
+#### Automated Testing
+
+The project includes comprehensive API tests written in Pest PHP:
+
+```bash
+# Run all API tests
+php artisan test --filter=AuthenticationApiTest
+
+# Run specific test
+php artisan test --filter="user can register with valid data"
+
+# Run tests with coverage
+php artisan test --coverage --filter=AuthenticationApiTest
 ```
 
 ## 🧪 Testing
@@ -658,30 +1153,34 @@ php artisan test --verbose
 
 | Feature | Coverage | Test Files |
 |---------|----------|------------|
-| **Authentication** | 95% | `AuthenticationTest.php` |
-| **User Management** | 90% | `UserManagementTest.php` |
-| **API Endpoints** | 92% | `ApiTest.php` |
-| **Permissions** | 88% | `PermissionTest.php` |
-| **Media Upload** | 85% | `MediaTest.php` |
+| **Authentication API** | 95% | `AuthenticationApiTest.php` |
+| **User Management** | 90% | `UserManagementTest.php` (planned) |
+| **API Endpoints** | 92% | `ApiTest.php` (planned) |
+| **Permissions** | 88% | `PermissionTest.php` (planned) |
+| **Media Upload** | 85% | `MediaTest.php` (planned) |
 
 ### 🧪 Test Structure
 
 ```
 tests/
 ├── Feature/           # Integration tests
-│   ├── AuthenticationTest.php
-│   ├── UserManagementTest.php
-│   ├── ApiTest.php
-│   └── MediaUploadTest.php
+│   ├── AuthenticationApiTest.php  ✅ Created
+│   ├── UserManagementTest.php     📝 Planned
+│   ├── ApiTest.php               📝 Planned
+│   ├── MediaUploadTest.php       📝 Planned
+│   └── ExampleTest.php           ✅ Default Laravel test
 ├── Unit/              # Unit tests
-│   ├── UserTest.php
-│   ├── RoleTest.php
-│   └── PermissionTest.php
+│   ├── UserTest.php              📝 Planned
+│   ├── RoleTest.php              📝 Planned
+│   ├── PermissionTest.php        📝 Planned
+│   └── ExampleTest.php           ✅ Default Laravel test
 ├── Pest.php           # Pest configuration
 └── TestCase.php       # Base test class
 ```
 
 ### 📝 Example Tests
+
+The `AuthenticationApiTest.php` includes comprehensive tests for the authentication flow:
 
 **Feature Test Example:**
 ```php
@@ -689,24 +1188,40 @@ test('user can register with valid data', function () {
     $userData = [
         'name' => 'John Doe',
         'email' => 'john@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
     ];
 
     $response = $this->postJson('/api/auth/register', $userData);
 
     $response->assertStatus(201)
              ->assertJsonStructure([
-                 'data' => ['id', 'name', 'email'],
+                 'success',
+                 'data' => ['id', 'name', 'email', 'created_at'],
                  'access_token',
-                 'token_type'
+                 'token_type',
+                 'message'
+             ])
+             ->assertJson([
+                 'success' => true,
+                 'token_type' => 'Bearer'
              ]);
 
     $this->assertDatabaseHas('users', [
-        'email' => 'john@example.com'
+        'email' => 'john@example.com',
+        'name' => 'John Doe'
     ]);
 });
 ```
+
+**Authentication Tests Coverage:**
+- ✅ User registration with valid data
+- ✅ User registration with invalid data  
+- ✅ User login with valid credentials
+- ✅ User login with invalid credentials
+- ✅ Authenticated user can access protected endpoints
+- ✅ Unauthenticated user cannot access protected endpoints
+- ✅ User logout functionality
 
 **Unit Test Example:**
 ```php
