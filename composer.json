@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "ash/citadel",
+    "name": "owlfice/citadel",
     "type": "project",
     "description": "Citadel - A production-ready Laravel backend boilerplate with OAuth2, permissions, media management, and full-text search capabilities.",
     "keywords": [
@@ -23,7 +23,7 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "ash",
+            "name": "Ashraf",
             "email": "ashrafahmadamir@gmail.com",
             "homepage": "https://owlfice.com",
             "role": "Developer"
