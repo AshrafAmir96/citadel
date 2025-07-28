@@ -19,7 +19,7 @@
         "pest",
         "backend"
     ],
-    "homepage": "https://github.com/your-username/citadel-laravel-boilerplate",
+    "homepage": "https://github.com/AshrafAmir96/citadel",
     "license": "MIT",
     "authors": [
         {
@@ -30,9 +30,9 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/your-username/citadel-laravel-boilerplate/issues",
-        "source": "https://github.com/your-username/citadel-laravel-boilerplate",
-        "docs": "https://github.com/your-username/citadel-laravel-boilerplate#readme"
+        "issues": "https://github.com/AshrafAmir96/citadel/issues",
+        "source": "https://github.com/AshrafAmir96/citadel",
+        "docs": "https://github.com/AshrafAmir96/citadel#readme"
     },
     "require": {
         "php": "^8.2",
