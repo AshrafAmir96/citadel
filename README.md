@@ -256,6 +256,124 @@ php artisan cache:clear
 php artisan pail
 ```
 
+## 🐳 Docker Development
+
+### Quick Start with Docker
+
+1. **Clone and start the development environment**
+   ```bash
+   git clone <repository-url> citadel
+   cd citadel
+   docker-compose up -d
+   ```
+
+2. **Access the application**
+   - Application: http://localhost:8000
+   - Database Admin: http://localhost:8080 (phpMyAdmin)
+   - Mail Testing: http://localhost:8025 (MailHog)
+   - Redis Admin: http://localhost:8081 (Redis Commander)
+
+### Docker Services
+
+| Service | Port | Description |
+|---------|------|-------------|
+| `app` | 8000 | Laravel application |
+| `mysql` | 3306 | MySQL database |
+| `redis` | 6379 | Redis cache & sessions |
+| `meilisearch` | 7700 | Search engine |
+| `mailhog` | 1025/8025 | Email testing |
+| `phpmyadmin` | 8080 | Database management |
+
+### Docker Commands
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f app
+
+# Run artisan commands
+docker-compose exec app php artisan migrate
+
+# Run tests
+docker-compose exec app php artisan test
+
+# Access application shell
+docker-compose exec app sh
+
+# Stop all services
+docker-compose down
+```
+
+## 🚀 CI/CD Pipeline
+
+The project includes a comprehensive GitLab CI/CD pipeline with the following stages:
+
+### Pipeline Stages
+
+1. **Test Stage**
+   - Code style checking with Laravel Pint
+   - Static analysis with PHPStan
+   - Unit and feature tests with Pest PHP
+   - Frontend asset building
+   - Test coverage reporting
+
+2. **Security Stage**
+   - Composer dependency audit
+   - NPM dependency audit
+   - Static Application Security Testing (SAST)
+
+3. **Build Stage**
+   - Optimized production build
+   - Asset compilation
+   - Docker image creation
+
+4. **Deploy Stage**
+   - Staging deployment (automatic on `develop`)
+   - Production deployment (manual on `main`)
+   - Review apps for merge requests
+
+### Required GitLab Variables
+
+Set these variables in your GitLab project settings:
+
+**Staging Environment:**
+- `STAGING_SERVER` - Staging server hostname
+- `STAGING_USER` - SSH username for staging
+- `STAGING_SSH_PRIVATE_KEY` - SSH private key for staging
+- `STAGING_PATH` - Application path on staging server
+- `STAGING_URL` - Staging application URL
+
+**Production Environment:**
+- `PRODUCTION_SERVER` - Production server hostname  
+- `PRODUCTION_USER` - SSH username for production
+- `PRODUCTION_SSH_PRIVATE_KEY` - SSH private key for production
+- `PRODUCTION_PATH` - Application path on production server
+- `PRODUCTION_URL` - Production application URL
+
+**Optional Notifications:**
+- `SLACK_WEBHOOK_URL` - Slack webhook for deployment notifications
+- `NOTIFICATION_EMAIL` - Email for deployment notifications
+
+### Deployment Script
+
+The project includes a deployment script (`scripts/deploy.sh`) that can be used independently:
+
+```bash
+# Deploy application
+./scripts/deploy.sh deploy
+
+# Rollback to previous version  
+./scripts/deploy.sh rollback
+
+# Run health checks
+./scripts/deploy.sh health
+
+# Create backup
+./scripts/deploy.sh backup
+```
+
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -263,6 +381,41 @@ php artisan pail
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+### Development Workflow
+
+1. **Local Development**
+   ```bash
+   # Using Laravel Sail
+   ./vendor/bin/sail up -d
+   
+   # Or using Docker Compose
+   docker-compose up -d
+   
+   # Or traditional setup
+   composer run dev
+   ```
+
+2. **Running Tests**
+   ```bash
+   # Run all tests
+   php artisan test
+   
+   # Run with coverage
+   php artisan test --coverage
+   
+   # Run specific test
+   php artisan test --filter=ExampleTest
+   ```
+
+3. **Code Quality**
+   ```bash
+   # Fix code style
+   composer run pint
+   
+   # Run static analysis
+   ./vendor/bin/phpstan analyse
+   ```
 
 ## 📄 License
 

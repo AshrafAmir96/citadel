@@ -1,0 +1,385 @@
+# GitLab CI/CD Pipeline for Citadel Laravel Backend Boilerplate
+# This pipeline includes testing, security checks, building, and deployment stages
+
+stages:
+  - test
+  - security
+  - build
+  - deploy
+
+variables:
+  # Database configuration for testing
+  DB_CONNECTION: sqlite
+  DB_DATABASE: ":memory:"
+  
+  # Application configuration
+  APP_ENV: testing
+  APP_DEBUG: "false"
+  APP_KEY: base64:cUPsjQyTtGKKGKB7F+yIIBVvfTT7bE4LJmCO1dw1hBE=
+  
+  # Cache configuration
+  CACHE_DRIVER: array
+  SESSION_DRIVER: array
+  QUEUE_CONNECTION: sync
+  
+  # Node.js version
+  NODE_VERSION: "18"
+  
+  # PHP version
+  PHP_VERSION: "8.2"
+
+# Cache configuration to speed up builds
+cache:
+  key: 
+    files:
+      - composer.lock
+      - package-lock.json
+  paths:
+    - vendor/
+    - node_modules/
+    - .composer-cache/
+
+# Base template for PHP jobs
+.php_template: &php_template
+  image: php:${PHP_VERSION}-cli
+  before_script:
+    # Install system dependencies
+    - apt-get update -yqq
+    - apt-get install -yqq git curl libpq-dev libcurl4-gnutls-dev libicu-dev libvpx-dev libjpeg-dev libpng-dev libxpm-dev zlib1g-dev libfreetype6-dev libxml2-dev libexpat1-dev libbz2-dev libgmp3-dev libldap2-dev unixodbc-dev libsqlite3-dev libaspell-dev libsnmp-dev libpcre3-dev libtidy-dev libonig-dev libzip-dev
+    
+    # Install PHP extensions
+    - docker-php-ext-install pdo pdo_sqlite bcmath gd zip intl
+    
+    # Install Composer
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    
+    # Set up Composer cache
+    - export COMPOSER_CACHE_DIR="$(pwd)/.composer-cache"
+    
+    # Install dependencies
+    - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
+    
+    # Set up Laravel environment
+    - cp .env.example .env
+    - php artisan key:generate
+    - php artisan config:cache
+
+# Base template for Node.js jobs
+.node_template: &node_template
+  image: node:${NODE_VERSION}-alpine
+  before_script:
+    - npm ci --cache .npm --prefer-offline
+
+# ================================
+# TEST STAGE
+# ================================
+
+# PHP Code Style Check
+code_style:
+  stage: test
+  <<: *php_template
+  script:
+    - composer run pint -- --test
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# PHPStan Static Analysis
+phpstan:
+  stage: test
+  <<: *php_template
+  script:
+    - composer require --dev phpstan/phpstan
+    - ./vendor/bin/phpstan analyse --memory-limit=2G
+  only:
+    - merge_requests
+    - main
+    - develop
+  allow_failure: true
+
+# Unit and Feature Tests
+test:
+  stage: test
+  <<: *php_template
+  script:
+    # Run database migrations
+    - php artisan migrate --force
+    
+    # Install Passport keys for testing
+    - php artisan passport:keys --force
+    
+    # Run tests
+    - php artisan test --coverage --min=80
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    paths:
+      - coverage/
+    expire_in: 1 week
+  coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Frontend Tests
+frontend_test:
+  stage: test
+  <<: *node_template
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - public/build/
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# ================================
+# SECURITY STAGE
+# ================================
+
+# Composer Security Audit
+composer_audit:
+  stage: security
+  <<: *php_template
+  script:
+    - composer audit
+  only:
+    - merge_requests
+    - main
+    - develop
+  allow_failure: true
+
+# NPM Security Audit
+npm_audit:
+  stage: security
+  <<: *node_template
+  script:
+    - npm audit --audit-level=high
+  only:
+    - merge_requests
+    - main
+    - develop
+  allow_failure: true
+
+# SAST (Static Application Security Testing)
+sast:
+  stage: security
+  image: registry.gitlab.com/gitlab-org/security-products/analyzers/phpcs-security-audit:latest
+  script:
+    - /analyzer run
+  artifacts:
+    reports:
+      sast: gl-sast-report.json
+  only:
+    - merge_requests
+    - main
+    - develop
+  allow_failure: true
+
+# ================================
+# BUILD STAGE
+# ================================
+
+# Build Application
+build:
+  stage: build
+  <<: *php_template
+  needs:
+    - test
+    - frontend_test
+  before_script:
+    # Install system dependencies
+    - apt-get update -yqq
+    - apt-get install -yqq git curl libzip-dev
+    
+    # Install PHP extensions
+    - docker-php-ext-install zip
+    
+    # Install Composer
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    
+    # Install Node.js
+    - curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+    - apt-get install -y nodejs
+  script:
+    # Install production dependencies
+    - composer install --optimize-autoloader --no-dev --prefer-dist --no-ansi --no-interaction --no-progress
+    
+    # Install frontend dependencies and build assets
+    - npm ci
+    - npm run build
+    
+    # Optimize Laravel for production
+    - php artisan config:cache
+    - php artisan route:cache
+    - php artisan view:cache
+    - php artisan optimize
+    
+    # Create deployment archive
+    - tar -czf citadel-${CI_COMMIT_SHORT_SHA}.tar.gz --exclude='.git' --exclude='node_modules' --exclude='tests' --exclude='.gitlab-ci.yml' .
+  artifacts:
+    paths:
+      - citadel-${CI_COMMIT_SHORT_SHA}.tar.gz
+    expire_in: 1 week
+  only:
+    - main
+    - develop
+    - tags
+
+# ================================
+# DEPLOY STAGE
+# ================================
+
+# Deploy to Staging
+deploy_staging:
+  stage: deploy
+  image: alpine:latest
+  needs:
+    - build
+  before_script:
+    - apk add --no-cache openssh-client rsync
+    - eval $(ssh-agent -s)
+    - echo "$STAGING_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $STAGING_SERVER >> ~/.ssh/known_hosts
+  script:
+    # Extract and upload the build
+    - tar -xzf citadel-${CI_COMMIT_SHORT_SHA}.tar.gz
+    - rsync -avz --delete --exclude='.env' ./ $STAGING_USER@$STAGING_SERVER:$STAGING_PATH/
+    
+    # Run deployment commands on staging server
+    - ssh $STAGING_USER@$STAGING_SERVER "cd $STAGING_PATH && php artisan migrate --force"
+    - ssh $STAGING_USER@$STAGING_SERVER "cd $STAGING_PATH && php artisan passport:keys --force"
+    - ssh $STAGING_USER@$STAGING_SERVER "cd $STAGING_PATH && php artisan queue:restart"
+    - ssh $STAGING_USER@$STAGING_SERVER "cd $STAGING_PATH && php artisan config:cache"
+    - ssh $STAGING_USER@$STAGING_SERVER "cd $STAGING_PATH && php artisan optimize"
+  environment:
+    name: staging
+    url: $STAGING_URL
+  only:
+    - develop
+  when: manual
+
+# Deploy to Production
+deploy_production:
+  stage: deploy
+  image: alpine:latest
+  needs:
+    - build
+  before_script:
+    - apk add --no-cache openssh-client rsync
+    - eval $(ssh-agent -s)
+    - echo "$PRODUCTION_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $PRODUCTION_SERVER >> ~/.ssh/known_hosts
+  script:
+    # Create backup of current production
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && tar -czf ../backup-$(date +%Y%m%d_%H%M%S).tar.gz ."
+    
+    # Extract and upload the build
+    - tar -xzf citadel-${CI_COMMIT_SHORT_SHA}.tar.gz
+    - rsync -avz --delete --exclude='.env' --exclude='storage/app' --exclude='storage/logs' ./ $PRODUCTION_USER@$PRODUCTION_SERVER:$PRODUCTION_PATH/
+    
+    # Run deployment commands on production server
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && php artisan down --render='errors::503'"
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && php artisan migrate --force"
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && php artisan passport:keys --force"
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && php artisan queue:restart"
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && php artisan config:cache"
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && php artisan optimize"
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && php artisan up"
+  environment:
+    name: production
+    url: $PRODUCTION_URL
+  only:
+    - main
+    - tags
+  when: manual
+
+# Deploy Review Apps for Merge Requests
+deploy_review:
+  stage: deploy
+  image: alpine:latest
+  needs:
+    - test
+    - frontend_test
+  before_script:
+    - apk add --no-cache openssh-client rsync
+    - eval $(ssh-agent -s)
+    - echo "$REVIEW_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $REVIEW_SERVER >> ~/.ssh/known_hosts
+  script:
+    # Create review app directory
+    - REVIEW_PATH="/var/www/review-apps/citadel-mr-$CI_MERGE_REQUEST_IID"
+    - ssh $REVIEW_USER@$REVIEW_SERVER "mkdir -p $REVIEW_PATH"
+    
+    # Upload code
+    - rsync -avz --exclude='.git' --exclude='node_modules' ./ $REVIEW_USER@$REVIEW_SERVER:$REVIEW_PATH/
+    
+    # Setup review app
+    - ssh $REVIEW_USER@$REVIEW_SERVER "cd $REVIEW_PATH && composer install --no-dev --optimize-autoloader"
+    - ssh $REVIEW_USER@$REVIEW_SERVER "cd $REVIEW_PATH && cp .env.example .env"
+    - ssh $REVIEW_USER@$REVIEW_SERVER "cd $REVIEW_PATH && php artisan key:generate"
+    - ssh $REVIEW_USER@$REVIEW_SERVER "cd $REVIEW_PATH && php artisan migrate --force"
+    - ssh $REVIEW_USER@$REVIEW_SERVER "cd $REVIEW_PATH && php artisan passport:keys --force"
+    - ssh $REVIEW_USER@$REVIEW_SERVER "cd $REVIEW_PATH && npm ci && npm run build"
+  environment:
+    name: review/$CI_MERGE_REQUEST_IID
+    url: https://citadel-mr-$CI_MERGE_REQUEST_IID.review.example.com
+    on_stop: stop_review
+  only:
+    - merge_requests
+  when: manual
+
+# Stop Review Apps
+stop_review:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$REVIEW_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $REVIEW_SERVER >> ~/.ssh/known_hosts
+  script:
+    - REVIEW_PATH="/var/www/review-apps/citadel-mr-$CI_MERGE_REQUEST_IID"
+    - ssh $REVIEW_USER@$REVIEW_SERVER "rm -rf $REVIEW_PATH"
+  environment:
+    name: review/$CI_MERGE_REQUEST_IID
+    action: stop
+  only:
+    - merge_requests
+  when: manual
+
+# ================================
+# SCHEDULED JOBS
+# ================================
+
+# Database Backup (scheduled job)
+backup:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$PRODUCTION_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $PRODUCTION_SERVER >> ~/.ssh/known_hosts
+  script:
+    - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && php artisan backup:run"
+  only:
+    - schedules
+  when: manual
