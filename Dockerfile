@@ -6,16 +6,18 @@ FROM node:18-alpine AS frontend-builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files first for better caching
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install all dependencies (including devDependencies for build tools)
+RUN npm ci
 
-# Copy source code
+# Copy all necessary files for the build
 COPY resources/ resources/
+COPY public/ public/
 COPY vite.config.js .
 COPY tailwind.config.js* ./
+COPY postcss.config.js* ./
 
 # Build frontend assets
 RUN npm run build

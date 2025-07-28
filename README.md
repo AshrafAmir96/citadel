@@ -886,6 +886,46 @@ DOCKER_BUILDKIT=1 docker-compose build
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
+### 🔧 Docker Troubleshooting
+
+**Common Issues:**
+
+1. **Frontend build fails with "vite: not found"**
+   ```bash
+   # Rebuild with no cache
+   docker-compose build --no-cache
+   
+   # Or build specific service
+   docker-compose build app
+   ```
+
+2. **Permission errors in containers**
+   ```bash
+   # Fix file permissions
+   sudo chown -R $(id -u):$(id -g) .
+   
+   # Rebuild containers
+   docker-compose up -d --build
+   ```
+
+3. **Database connection issues**
+   ```bash
+   # Check if MySQL is ready
+   docker-compose logs mysql
+   
+   # Restart services in order
+   docker-compose restart mysql
+   docker-compose restart app
+   ```
+
+4. **Port conflicts**
+   ```bash
+   # Check what's using the ports
+   netstat -tulpn | grep :8000
+   
+   # Stop conflicting services or change ports in docker-compose.yml
+   ```
+
 ## 🚀 CI/CD Pipeline
 
 The project includes a comprehensive GitLab CI/CD pipeline with the following stages:
