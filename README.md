@@ -1,4 +1,8 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Citadel - Laravel Backend Boilerplate
+
+<p align="center">
+    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
+</p>
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
@@ -7,55 +11,266 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## 🚀 About Citadel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Citadel is a comprehensive Laravel backend boilerplate designed to jumpstart your web application development. Built with Laravel 12 and modern PHP 8.2+, it provides a solid foundation with pre-configured authentication, permissions, media handling, and search capabilities.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **🔐 Authentication & Authorization**
+  - Laravel Passport OAuth2 server implementation
+  - Role-based permissions with Spatie Laravel Permission
+  - JWT token authentication for APIs
 
-## Learning Laravel
+- **📁 Media Management**
+  - File uploads and media library with Spatie Laravel Medialibrary
+  - Image processing and optimization
+  - Multiple storage driver support
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **🔍 Search Capabilities**
+  - Full-text search with Laravel Scout
+  - Configurable search drivers
+  - Indexing and querying optimization
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **🧪 Testing Suite**
+  - Pest PHP testing framework
+  - Feature and unit test examples
+  - CI/CD ready test configuration
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **🎨 Frontend Ready**
+  - Tailwind CSS 4.0 integration
+  - Vite build system
+  - Modern JavaScript with Axios
 
-## Laravel Sponsors
+- **⚡ Development Tools**
+  - Laravel Pint for code styling
+  - Laravel Pail for log monitoring
+  - Laravel Sail for Docker development
+  - Concurrent development server setup
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 📦 Key Packages
 
-### Premium Partners
+### Backend Dependencies
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+| Package | Version | Description |
+|---------|---------|-------------|
+| `laravel/framework` | ^12.0 | Core Laravel framework |
+| `laravel/passport` | ^13.0 | OAuth2 server implementation |
+| `laravel/scout` | ^10.17 | Full-text search |
+| `spatie/laravel-medialibrary` | ^11.13 | Media file management |
+| `spatie/laravel-permission` | ^6.21 | Role and permission management |
+| `laravel/tinker` | ^2.10.1 | Interactive PHP REPL |
 
-## Contributing
+### Development Dependencies
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Package | Version | Description |
+|---------|---------|-------------|
+| `pestphp/pest` | ^3.8 | Modern PHP testing framework |
+| `laravel/pint` | ^1.13 | PHP code style fixer |
+| `laravel/sail` | ^1.41 | Docker development environment |
+| `laravel/pail` | ^1.2.2 | Log monitoring tool |
 
-## Code of Conduct
+### Frontend Dependencies
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Package | Version | Description |
+|---------|---------|-------------|
+| `tailwindcss` | ^4.0.0 | Utility-first CSS framework |
+| `vite` | ^7.0.4 | Next-generation frontend tooling |
+| `axios` | ^1.8.2 | HTTP client library |
 
-## Security Vulnerabilities
+## 🛠 Installation
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Prerequisites
 
-## License
+- PHP 8.2 or higher
+- Composer 2.0+
+- Node.js 18+ and npm
+- SQLite/MySQL/PostgreSQL database
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url> citadel
+   cd citadel
+   ```
+
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
+
+3. **Install Node.js dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Environment setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+5. **Database setup**
+   ```bash
+   touch database/database.sqlite  # For SQLite
+   php artisan migrate
+   ```
+
+6. **Passport setup**
+   ```bash
+   php artisan passport:install
+   ```
+
+7. **Start development servers**
+   ```bash
+   composer run dev
+   ```
+
+This will start the Laravel server, queue worker, and Vite development server concurrently.
+
+## 🗄 Database Structure
+
+The boilerplate includes the following database tables:
+
+- **users** - User authentication and profile data
+- **password_reset_tokens** - Password reset functionality
+- **sessions** - User session management
+- **oauth_*** - Passport OAuth2 tables for API authentication
+- **cache** - Application caching
+- **jobs** - Queue system tables
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Key environment variables to configure:
+
+```env
+APP_NAME=Citadel
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+
+DB_CONNECTION=sqlite
+DB_DATABASE=/absolute/path/to/database/database.sqlite
+
+SCOUT_DRIVER=database
+```
+
+### Passport Configuration
+
+After installation, configure Passport in your `AuthServiceProvider`:
+
+```php
+use Laravel\Passport\Passport;
+
+public function boot()
+{
+    Passport::loadKeysFrom(storage_path());
+    // Additional Passport configuration
+}
+```
+
+## 📚 API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/logout` - User logout
+- `GET /api/user` - Get authenticated user (requires auth:api middleware)
+
+## 🧪 Testing
+
+Run the test suite using Pest:
+
+```bash
+# Run all tests
+composer test
+
+# Run specific test file
+php artisan test tests/Feature/ExampleTest.php
+
+# Run with coverage
+php artisan test --coverage
+```
+
+## 🚀 Deployment
+
+### Production Setup
+
+1. **Environment configuration**
+   ```bash
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+   ```
+
+2. **Asset compilation**
+   ```bash
+   npm run build
+   ```
+
+3. **Optimization**
+   ```bash
+   composer install --optimize-autoloader --no-dev
+   php artisan optimize
+   ```
+
+## 🔒 Security Features
+
+- **CSRF Protection** - Built-in CSRF token validation
+- **SQL Injection Prevention** - Eloquent ORM with parameter binding
+- **XSS Protection** - Blade template engine with automatic escaping
+- **OAuth2 Security** - Passport implementation with secure token handling
+- **Role-based Access Control** - Spatie Permission package integration
+
+## 📖 Development Commands
+
+### Custom Composer Scripts
+
+```bash
+# Start development environment (server + queue + vite)
+composer run dev
+
+# Run tests with configuration clearing
+composer run test
+```
+
+### Artisan Commands
+
+```bash
+# Generate application key
+php artisan key:generate
+
+# Run database migrations
+php artisan migrate
+
+# Create Passport keys
+php artisan passport:install
+
+# Clear application cache
+php artisan cache:clear
+
+# Monitor logs in real-time
+php artisan pail
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## 🙏 Acknowledgments
+
+- [Laravel Framework](https://laravel.com) - The web artisans framework
+- [Spatie](https://spatie.be) - Amazing Laravel packages
+- [Pest PHP](https://pestphp.com) - Modern testing framework
+- [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
