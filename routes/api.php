@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\Route;
 // API Documentation
 Route::get('/', [ApiDocumentationController::class, 'index']);
 
+// Version endpoint (public)
+Route::get('version', function () {
+    return response()->json([
+        'version' => app_version(),
+        'timestamp' => now()->toISOString(),
+        'environment' => app()->environment(),
+    ]);
+});
+
 // Authentication routes
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);

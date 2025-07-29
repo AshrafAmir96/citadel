@@ -34,7 +34,18 @@ Citadel is a **production-ready Laravel backend boilerplate** designed to accele
 
 ## 🚀 Quick Start
 
-Get Citadel running in under 5 minutes:
+Get Citadel running in 5 minutes! See [QUICKSTART.md](QUICKSTART.md) for detailed instructions.
+
+## 📊 Version Information
+
+Current version: `{{ app_version() }}`
+
+- **Semantic Versioning**: Automated version management with GitLab CI/CD
+- **Version API**: `GET /api/version` for version information
+- **Release Notes**: See [CHANGELOG.md](CHANGELOG.md) for version history
+- **Versioning Guide**: See [SEMANTIC_VERSIONING.md](SEMANTIC_VERSIONING.md) for commit conventions
+
+## ✨ Features
 
 ### Option 1: Docker (Recommended)
 ```bash
@@ -178,6 +189,7 @@ app/Console/Commands/
 ├── DOCKER.md                  # Docker development guide
 ├── COMMANDS.md                # Artisan commands reference
 ├── DEPLOYMENT.md              # Production deployment guide
+├── SEMANTIC_VERSIONING.md     # Semantic versioning with GitLab CI/CD
 ├── CHANGELOG.md               # Version history and changes
 └── CONTRIBUTING.md            # Contribution guidelines
 ```

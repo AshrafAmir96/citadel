@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **🏷️ Semantic Versioning Integration**: Automated version management with GitLab CI/CD
+  - Semantic-release for automatic version bumps based on conventional commits
+  - Version API endpoint (`GET /api/version`) for runtime version information
+  - `app_version()` helper function with intelligent version detection
+  - Conventional commit message format enforcement
+  - Automated changelog generation and GitLab releases
+  - Version-aware deployment process with versioned artifacts
+  - Comprehensive semantic versioning documentation ([SEMANTIC_VERSIONING.md](SEMANTIC_VERSIONING.md))
 - Initial release preparation for Packagist
 
 ## [1.2.0] - 2025-07-29

@@ -48,6 +48,64 @@ if (! function_exists('is_super_admin')) {
         }
 
         return $user->hasRole(super_admin_role());
+}
+
+if (! function_exists('app_version')) {
+    /**
+     * Get the application version.
+     */
+    function app_version(): string
+    {
+        // Try to get from environment first (set during CI/CD)
+        if ($version = env('APP_VERSION')) {
+            return $version;
+        }
+
+        // Try to get from VERSION file (created during build)
+        $versionFile = base_path('VERSION');
+        if (file_exists($versionFile)) {
+            return trim(file_get_contents($versionFile));
+        }
+
+        // Try to get from git (development environment)
+        if (function_exists('exec')) {
+            $gitVersion = null;
+            exec('git describe --tags --abbrev=0 2>/dev/null', $output, $returnCode);
+            if ($returnCode === 0 && !empty($output)) {
+                $gitVersion = trim($output[0]);
+            }
+            
+            if ($gitVersion) {
+                // Add commit hash for development
+                exec('git rev-parse --short HEAD 2>/dev/null', $commitOutput, $commitReturnCode);
+                if ($commitReturnCode === 0 && !empty($commitOutput)) {
+                    return $gitVersion . '-dev.' . trim($commitOutput[0]);
+                }
+                return $gitVersion . '-dev';
+            }
+        }
+
+        // Fallback to package.json or composer.json version
+        $packageJson = base_path('package.json');
+        if (file_exists($packageJson)) {
+            $package = json_decode(file_get_contents($packageJson), true);
+            if (isset($package['version'])) {
+                return $package['version'];
+            }
+        }
+
+        $composerJson = base_path('composer.json');
+        if (file_exists($composerJson)) {
+            $composer = json_decode(file_get_contents($composerJson), true);
+            if (isset($composer['version'])) {
+                return $composer['version'];
+            }
+        }
+
+        // Final fallback
+        return '1.0.0-dev';
+    }
+}
     }
 }
 
@@ -118,5 +176,62 @@ if (! function_exists('authorize_wildcard')) {
         if (! can_wildcard($user, $permission)) {
             throw new \Illuminate\Auth\Access\AuthorizationException('This action is unauthorized.');
         }
+    }
+}
+
+if (! function_exists('app_version')) {
+    /**
+     * Get the application version.
+     */
+    function app_version(): string
+    {
+        // Try to get from environment first (set during CI/CD)
+        if ($version = env('APP_VERSION')) {
+            return $version;
+        }
+
+        // Try to get from VERSION file (created during build)
+        $versionFile = base_path('VERSION');
+        if (file_exists($versionFile)) {
+            return trim(file_get_contents($versionFile));
+        }
+
+        // Try to get from git (development environment)
+        if (function_exists('exec')) {
+            $gitVersion = null;
+            exec('git describe --tags --abbrev=0 2>/dev/null', $output, $returnCode);
+            if ($returnCode === 0 && !empty($output)) {
+                $gitVersion = trim($output[0]);
+            }
+            
+            if ($gitVersion) {
+                // Add commit hash for development
+                exec('git rev-parse --short HEAD 2>/dev/null', $commitOutput, $commitReturnCode);
+                if ($commitReturnCode === 0 && !empty($commitOutput)) {
+                    return $gitVersion . '-dev.' . trim($commitOutput[0]);
+                }
+                return $gitVersion . '-dev';
+            }
+        }
+
+        // Fallback to package.json or composer.json version
+        $packageJson = base_path('package.json');
+        if (file_exists($packageJson)) {
+            $package = json_decode(file_get_contents($packageJson), true);
+            if (isset($package['version'])) {
+                return $package['version'];
+            }
+        }
+
+        $composerJson = base_path('composer.json');
+        if (file_exists($composerJson)) {
+            $composer = json_decode(file_get_contents($composerJson), true);
+            if (isset($composer['version'])) {
+                return $composer['version'];
+            }
+        }
+
+        // Final fallback
+        return '1.0.0-dev';
     }
 }

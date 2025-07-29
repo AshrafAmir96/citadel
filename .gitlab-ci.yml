@@ -4,6 +4,7 @@
 stages:
   - test
   - security
+  - version
   - build
   - deploy
 
@@ -184,6 +185,55 @@ sast:
   allow_failure: true
 
 # ================================
+# VERSION STAGE
+# ================================
+
+# Semantic Release - Generate version and changelog
+semantic_release:
+  stage: version
+  image: node:18-alpine
+  before_script:
+    - apk add --no-cache git
+    - npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/gitlab
+  script:
+    - semantic-release
+  variables:
+    # Semantic Release configuration
+    GITLAB_TOKEN: $CI_JOB_TOKEN
+  artifacts:
+    paths:
+      - CHANGELOG.md
+      - VERSION
+    expire_in: 1 week
+  only:
+    - main
+  except:
+    - schedules
+
+# Generate version file for feature branches
+version_info:
+  stage: version
+  image: alpine/git:latest
+  script:
+    # Generate version based on git info for non-main branches
+    - |
+      if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
+        VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.1.0")
+      else
+        VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.1.0")
+        VERSION="${VERSION}-${CI_COMMIT_REF_SLUG}.${CI_COMMIT_SHORT_SHA}"
+      fi
+      echo $VERSION > VERSION
+      echo "Generated version: $VERSION"
+  artifacts:
+    paths:
+      - VERSION
+    expire_in: 1 week
+  except:
+    - main
+    - schedules
+
+# ================================
 # BUILD STAGE
 # ================================
 
@@ -194,6 +244,10 @@ build:
   needs:
     - test
     - frontend_test
+    - job: semantic_release
+      optional: true
+    - job: version_info
+      optional: true
   before_script:
     # Install system dependencies
     - apt-get update -yqq
@@ -209,6 +263,15 @@ build:
     - curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
     - apt-get install -y nodejs
   script:
+    # Get version from semantic release or generate one
+    - |
+      if [ -f "VERSION" ]; then
+        VERSION=$(cat VERSION)
+      else
+        VERSION="${CI_COMMIT_SHORT_SHA}"
+      fi
+      echo "Building version: $VERSION"
+    
     # Install production dependencies
     - composer install --optimize-autoloader --no-dev --prefer-dist --no-ansi --no-interaction --no-progress
     
@@ -216,17 +279,23 @@ build:
     - npm ci
     - npm run build
     
+    # Set version in application
+    - echo "APP_VERSION=$VERSION" >> .env.production
+    
     # Optimize Laravel for production
     - php artisan config:cache
     - php artisan route:cache
     - php artisan view:cache
     - php artisan optimize
     
-    # Create deployment archive
-    - tar -czf citadel-${CI_COMMIT_SHORT_SHA}.tar.gz --exclude='.git' --exclude='node_modules' --exclude='tests' --exclude='.gitlab-ci.yml' .
+    # Create deployment archive with version
+    - tar -czf citadel-${VERSION}.tar.gz --exclude='.git' --exclude='node_modules' --exclude='tests' --exclude='.gitlab-ci.yml' .
+    - echo $VERSION > RELEASE_VERSION
   artifacts:
     paths:
-      - citadel-${CI_COMMIT_SHORT_SHA}.tar.gz
+      - citadel-*.tar.gz
+      - RELEASE_VERSION
+      - VERSION
     expire_in: 1 week
   only:
     - main
@@ -251,8 +320,12 @@ deploy_staging:
     - chmod 700 ~/.ssh
     - ssh-keyscan -H $STAGING_SERVER >> ~/.ssh/known_hosts
   script:
+    # Get version from build artifacts
+    - VERSION=$(cat RELEASE_VERSION 2>/dev/null || echo "${CI_COMMIT_SHORT_SHA}")
+    - echo "Deploying version:" $VERSION
+    
     # Extract and upload the build
-    - tar -xzf citadel-${CI_COMMIT_SHORT_SHA}.tar.gz
+    - tar -xzf citadel-${VERSION}.tar.gz
     - rsync -avz --delete --exclude='.env' ./ $STAGING_USER@$STAGING_SERVER:$STAGING_PATH/
     
     # Run deployment commands on staging server
@@ -282,11 +355,15 @@ deploy_production:
     - chmod 700 ~/.ssh
     - ssh-keyscan -H $PRODUCTION_SERVER >> ~/.ssh/known_hosts
   script:
+    # Get version from build artifacts
+    - VERSION=$(cat RELEASE_VERSION 2>/dev/null || echo "${CI_COMMIT_SHORT_SHA}")
+    - echo "Deploying version:" $VERSION
+    
     # Create backup of current production
     - ssh $PRODUCTION_USER@$PRODUCTION_SERVER "cd $PRODUCTION_PATH && tar -czf ../backup-$(date +%Y%m%d_%H%M%S).tar.gz ."
     
     # Extract and upload the build
-    - tar -xzf citadel-${CI_COMMIT_SHORT_SHA}.tar.gz
+    - tar -xzf citadel-${VERSION}.tar.gz
     - rsync -avz --delete --exclude='.env' --exclude='storage/app' --exclude='storage/logs' ./ $PRODUCTION_USER@$PRODUCTION_SERVER:$PRODUCTION_PATH/
     
     # Run deployment commands on production server
