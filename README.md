@@ -18,32 +18,11 @@
 
 ---
 
-## 📋 Table of Contents
-
-- [About Citadel](#-about-citadel)
-- [Features](#-features)
-- [Key Packages](#-key-packages)
-- [Quick Start](#-quick-start)
-- [Installation](#-installation)
-- [Docker Development](#-docker-development)
-- [Database Structure](#-database-structure)
-- [Configuration](#-configuration)
-- [API Documentation](#-api-documentation)
-- [Testing](#-testing)
-- [CI/CD Pipeline](#-cicd-pipeline)
-- [Deployment](#-deployment)
-- [Security Features](#-security-features)
-- [Development Commands](#-development-commands)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Acknowledgments](#-acknowledgments)</p>
-</invoke>
-
-## 🚀 About Citadel
+## 🎯 About Citadel
 
 Citadel is a **production-ready Laravel backend boilerplate** designed to accelerate your web application development. Built with **Laravel 12** and modern **PHP 8.2+**, it provides a robust foundation with enterprise-grade features including OAuth2 authentication, role-based permissions, media management, and full-text search capabilities.
 
-### 🎯 Why Choose Citadel?
+### ✨ Why Choose Citadel?
 
 - ⚡ **Fast Setup** - Get your API up and running in minutes
 - 🏗️ **Production Ready** - Built with scalability and security in mind  
@@ -53,7 +32,7 @@ Citadel is a **production-ready Laravel backend boilerplate** designed to accele
 - 🚀 **CI/CD Included** - GitLab pipeline for automated testing and deployment
 - 📚 **Well Documented** - Extensive documentation and examples
 
-## ⚡ Quick Start
+## 🚀 Quick Start
 
 Get Citadel running in under 5 minutes:
 
@@ -84,411 +63,159 @@ cd citadel
 ```
 **🌐 Access:** http://localhost
 
----
-
-## ✨ Features
+## ✨ Key Features
 
 ### 🔐 Authentication & Authorization
 - **Laravel Passport OAuth2** - Complete OAuth2 server implementation
-- **Role-Based Access Control** - Spatie Laravel Permission integration
+- **Role-Based Access Control** - Spatie Laravel Permission with dot notation (`users.*`, `media.*`)
+- **Configurable Super Admin** - Environment-configurable super admin role
 - **JWT Token Authentication** - Secure API authentication
-- **Multi-guard Authentication** - Support for different user types
-- **Password Reset & Email Verification** - Built-in user management
+- **Permission Helper Functions** - Wildcard-aware permission checking
 
-### 📁 Media Management
+### 🎯 Modern API Design
+- **Query Builder Integration** - Spatie Laravel Query Builder for flexible API queries
+- **Advanced Filtering** - `?filter[name]=john&sort=-created_at&include=roles`
+- **Field Selection** - `?fields[users]=id,name,email` for optimized responses  
+- **Auto-Generated Docs** - Scramble for automatic OpenAPI documentation
+- **Consistent Responses** - Standardized JSON API response format
+
+### 📁 Media & Content Management
 - **File Upload System** - Spatie Laravel Medialibrary integration
-- **Image Processing** - Automatic image optimization and resizing
-- **Multiple Storage Drivers** - Local, S3, and cloud storage support
-- **File Type Validation** - Secure file upload with type checking
-- **Media Conversions** - Generate thumbnails and different formats
-
-### 🔍 Search Capabilities
+- **Image Processing** - Automatic optimization and thumbnail generation
 - **Full-Text Search** - Laravel Scout with multiple drivers
-- **Search Engine Support** - Meilisearch, Algolia, and database drivers
-- **Auto-Indexing** - Automatic content indexing and synchronization
-- **Advanced Filtering** - Complex search queries and filters
+- **Multiple Storage** - Local, S3, and cloud storage support
 
-### 📚 API Documentation & Query Building
-- **Auto-Generated API Docs** - Scramble for automatic OpenAPI documentation
-- **Elegant Query Builder** - Spatie Laravel Query Builder for flexible API queries
-- **Request Filtering** - Advanced filtering, sorting, and field selection
-- **API Versioning** - Built-in support for API versioning
-
-### 🧪 Testing & Quality Assurance
-- **Pest PHP Framework** - Modern PHP testing with beautiful syntax
-- **Feature & Unit Tests** - Comprehensive test coverage
-- **CI/CD Integration** - Automated testing pipeline
+### 🧪 Developer Experience
+- **Pest PHP Testing** - Modern testing framework with beautiful syntax
+- **Docker Development** - One-command environment setup
 - **Code Quality Tools** - Laravel Pint, PHPStan integration
-- **Test Coverage Reports** - Detailed coverage analysis
+- **Hot Module Replacement** - Fast development with Vite
+- **Redis Integration** - High-performance caching and sessions
 
-### 🎨 Frontend Integration
-- **Tailwind CSS 4.0** - Modern utility-first CSS framework
-- **Vite Build System** - Lightning-fast frontend tooling
-- **Modern JavaScript** - ES6+ with Axios for HTTP requests
-- **Hot Module Replacement** - Fast development feedback
+## 📦 Key Technologies
 
-### ⚡ Development Experience
-- **Laravel Pint** - Automatic code style fixing
-- **Laravel Pail** - Real-time log monitoring
-- **Laravel Sail** - Docker development environment
-- **Concurrent Servers** - Dev server, queue worker, and asset building
-- **Git Hooks** - Pre-commit code quality checks
-- **Redis Integration** - High-performance caching and session storage
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Framework** | Laravel 12 | Backend foundation |
+| **Authentication** | Laravel Passport | OAuth2 server |
+| **Permissions** | Spatie Permission | Role-based access control |
+| **Media** | Spatie Medialibrary | File management |
+| **Search** | Laravel Scout | Full-text search |
+| **API Queries** | Spatie Query Builder | Flexible API filtering |
+| **Testing** | Pest PHP | Modern testing framework |
+| **Frontend** | Tailwind CSS + Vite | Modern UI development |
+| **Cache/Queue** | Redis | High-performance data store |
+| **Database** | MySQL/PostgreSQL/SQLite | Flexible database support |
 
-### 🐳 DevOps & Deployment
-- **Docker Support** - Complete containerization
-- **GitLab CI/CD** - Automated testing and deployment
-- **Multi-Environment** - Staging, production, and review apps
-- **Health Checks** - Application monitoring and status
-- **Backup System** - Automated database and file backups
+## 🏗️ Project Structure
 
-## 📦 Key Packages
-
-Citadel is built on top of carefully selected, production-tested packages:
-
-### 🔧 Backend Core Dependencies
-
-| Package | Version | Purpose | Documentation |
-|---------|---------|---------|---------------|
-| `laravel/framework` | ^12.0 | Core Laravel framework | [Docs](https://laravel.com/docs) |
-| `laravel/passport` | ^13.0 | OAuth2 server implementation | [Docs](https://laravel.com/docs/passport) |
-| `laravel/scout` | ^10.17 | Full-text search abstraction | [Docs](https://laravel.com/docs/scout) |
-| `spatie/laravel-medialibrary` | ^11.13 | Media file management | [Docs](https://spatie.be/docs/laravel-medialibrary) |
-| `spatie/laravel-permission` | ^6.21 | Role and permission management | [Docs](https://spatie.be/docs/laravel-permission) |
-| `spatie/laravel-query-builder` | ^6.3 | Elegant API query builder | [Docs](https://spatie.be/docs/laravel-query-builder) |
-| `predis/predis` | ^3.1 | Redis client for PHP | [Docs](https://github.com/predis/predis) |
-| `dedoc/scramble` | ^0.12.26 | API documentation generator | [Docs](https://scramble.dedoc.co) |
-| `laravel/tinker` | ^2.10.1 | Interactive PHP REPL | [Docs](https://laravel.com/docs/artisan#tinker) |
-
-### 🛠 Development & Testing Dependencies
-
-| Package | Version | Purpose | Documentation |
-|---------|---------|---------|---------------|
-| `pestphp/pest` | ^3.8 | Modern PHP testing framework | [Docs](https://pestphp.com) |
-| `laravel/pint` | ^1.13 | PHP code style fixer | [Docs](https://laravel.com/docs/pint) |
-| `laravel/sail` | ^1.41 | Docker development environment | [Docs](https://laravel.com/docs/sail) |
-| `laravel/pail` | ^1.2.2 | Real-time log monitoring | [Docs](https://laravel.com/docs/logging#tailing-logs) |
-
-### 🎨 Frontend Dependencies
-
-| Package | Version | Purpose | Documentation |
-|---------|---------|---------|---------------|
-| `tailwindcss` | ^4.0.0 | Utility-first CSS framework | [Docs](https://tailwindcss.com) |
-| `vite` | ^7.0.4 | Next-generation frontend tooling | [Docs](https://vitejs.dev) |
-| `axios` | ^1.8.2 | Promise-based HTTP client | [Docs](https://axios-http.com) |
-| `concurrently` | ^9.0.1 | Run multiple commands concurrently | [NPM](https://www.npmjs.com/package/concurrently) |
-
-## 🛠 Implementation Status
-
-### ✅ Completed Features
-
-| Component | Status | Description |
-|-----------|--------|-------------|
-| **API Routes** | ✅ Complete | All routes defined in `routes/api.php` |
-| **API Controllers** | ✅ Complete | Organized in `App\Http\Controllers\Api` namespace |
-| **Authentication Controller** | ✅ Complete | Register, login, logout, current user |
-| **User Management Controller** | ✅ Complete | CRUD operations with permission checks |
-| **Media Controller** | ✅ Complete | File upload, list, and delete operations |
-| **Search Controller** | ✅ Complete | Laravel Scout integration for user search |
-| **API Documentation Controller** | ✅ Complete | Endpoint overview and documentation |
-| **User Model Extensions** | ✅ Complete | Passport, Permissions, Media, Search traits |
-| **Database Migrations** | ✅ Published | Permission and Media Library migrations |
-| **API Tests** | ✅ Complete | Comprehensive authentication API tests |
-| **Consistent Response Format** | ✅ Complete | Standardized JSON responses with error handling |
-
-### 🏗️ Controllers Created
-
-All API controllers are organized in the `App\Http\Controllers\Api` namespace for better structure and maintainability:
-
-1. **`Api\AuthController`** - Authentication endpoints
-   - `register()` - User registration with validation
-   - `login()` - User authentication with OAuth2
-   - `logout()` - Token revocation
-   - `user()` - Get current authenticated user
-
-2. **`Api\UserController`** - User management endpoints
-   - `index()` - List all users (admin only)
-   - `show()` - Get user by ID (with permission checks)
-   - `update()` - Update user profile (with permission checks)
-   - `assignRole()` - Assign role to user (admin only)
-   - `permissions()` - Get user permissions
-
-3. **`Api\MediaController`** - File management endpoints
-   - `store()` - Upload files with validation (10MB limit)
-   - `index()` - List user's media files
-   - `destroy()` - Delete media files
-
-4. **`Api\SearchController`** - Search functionality
-   - `search()` - Search users with Laravel Scout
-
-5. **`Api\ApiDocumentationController`** - API documentation
-   - `index()` - Overview of all available endpoints
-
-### 📁 Controller Structure
-
+### API Controllers (Organized)
 ```
-app/Http/Controllers/
-├── Controller.php              # Base controller
-└── Api/                       # API controllers namespace
-    ├── ApiDocumentationController.php
-    ├── AuthController.php
-    ├── MediaController.php
-    ├── SearchController.php
-    └── UserController.php
+app/Http/Controllers/Api/
+├── AuthController.php          # Authentication endpoints
+├── UserController.php          # User management with QueryBuilder
+├── MediaController.php         # File upload and management
+├── SearchController.php        # Full-text search functionality
+└── ApiDocumentationController.php # API documentation
 ```
 
-### 🚧 Next Steps Required
+### Configuration System
+- **`config/citadel.php`** - Centralized configuration
+- **`app/helpers.php`** - Helper functions with autoloading
+- **`.env.citadel.example`** - Environment variable examples
 
-To complete the setup and start using the API:
+### Permission System
+- **Dot Notation** - `users.view`, `media.upload`, `roles.assign`
+- **Wildcard Support** - `users.*` grants all user permissions
+- **Configurable Roles** - Environment-based role configuration
 
-1. **Database Setup**
-   ```bash
-   # Configure database in .env file
-   # For MySQL:
-   DB_CONNECTION=mysql
-   DB_DATABASE=citadel
-   DB_USERNAME=root
-   DB_PASSWORD=your_password
-   
-   # Run migrations
-   php artisan migrate
-   ```
+## 📖 Documentation
 
-2. **Install Passport**
-   ```bash
-   php artisan passport:install
-   ```
+| Topic | Link | Description |
+|-------|------|-------------|
+| **Installation** | [docs/INSTALL.md](docs/INSTALL.md) | Step-by-step setup guide |
+| **API Reference** | [docs/API.md](docs/API.md) | Complete API documentation |
+| **Docker Guide** | [docs/DOCKER.md](docs/DOCKER.md) | Docker development setup |
+| **Testing** | [docs/TESTING.md](docs/TESTING.md) | Testing guide and examples |
+| **Deployment** | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Production deployment guide |
+| **Configuration** | [CITADEL_CONFIG.md](CITADEL_CONFIG.md) | Configuration system guide |
+| **Permissions** | [DOT_NOTATION_PERMISSIONS.md](DOT_NOTATION_PERMISSIONS.md) | Permission system details |
 
-3. **Create Initial Admin User**
-   ```bash
-   php artisan tinker
-   ```
-   ```php
-   $user = App\Models\User::create([
-       'name' => 'Admin User',
-       'email' => 'admin@example.com',
-       'password' => bcrypt('password'),
-       'email_verified_at' => now(),
-   ]);
-   
-   // Create admin role and permission
-   $role = Spatie\Permission\Models\Role::create(['name' => 'admin']);
-   $permission = Spatie\Permission\Models\Permission::create(['name' => 'manage users']);
-   $role->givePermissionTo($permission);
-   $user->assignRole('admin');
-   ```
+## 🚀 Installation
 
-4. **Test the API**
-   ```bash
-   # Start the server
-   php artisan serve
-   
-   # Run tests
-   composer test
-   
-   # Test endpoints with curl or Postman
-   curl -X GET http://localhost:8000/api/
-   ```
+### Prerequisites
+- PHP 8.2+
+- Composer 2.0+
+- Node.js 18+
+- Database (MySQL/PostgreSQL/SQLite)
 
-## 📦 Package Installation
-
-## � Package Installation
-
-You can install this boilerplate via Composer:
-
+### Quick Setup
 ```bash
-# Create a new project using Citadel
-composer create-project your-username/citadel-laravel-boilerplate my-project
-
-# Navigate to your project
-cd my-project
-
-# Set up the environment
-cp .env.example .env
-php artisan key:generate
-
-# Run database migrations
-php artisan migrate
-
-# Install Passport
-php artisan passport:install
-
-# Install frontend dependencies and build assets
-npm install && npm run build
-
-# Start development server
-composer run dev
-```
-
-## �🛠 Installation
-
-### 📋 Prerequisites
-
-Ensure you have the following installed on your system:
-
-| Requirement | Version | Download |
-|-------------|---------|----------|
-| **PHP** | 8.2+ | [php.net](https://www.php.net/downloads) |
-| **Composer** | 2.0+ | [getcomposer.org](https://getcomposer.org) |
-| **Node.js** | 18+ | [nodejs.org](https://nodejs.org) |
-| **Database** | MySQL 8.0+ / PostgreSQL 13+ / SQLite 3.8+ | - |
-
-### 🚀 Step-by-Step Installation
-
-#### 1. Clone the Repository
-```bash
+# Clone repository
 git clone <repository-url> citadel
 cd citadel
-```
 
-#### 2. Install Dependencies
-```bash
-# Install PHP dependencies
-composer install
+# Install dependencies
+composer install && npm install
 
-# Install Node.js dependencies  
-npm install
-```
-
-#### 3. Environment Configuration
-```bash
-# Copy environment file
+# Environment setup
 cp .env.example .env
-
-# Generate application key
 php artisan key:generate
-```
 
-#### 4. Database Setup
-
-**For SQLite (Development):**
-```bash
-touch database/database.sqlite
+# Database setup
 php artisan migrate
-```
-
-**For MySQL/PostgreSQL:**
-```bash
-# Update .env with your database credentials
-php artisan migrate
-```
-
-#### 5. OAuth2 Setup
-```bash
-# Generate Passport keys
 php artisan passport:install
 
-# Optional: Create personal access client
-php artisan passport:client --personal
-```
+# Create admin user
+php artisan db:seed --class=RolesAndPermissionsSeeder
 
-#### 6. Asset Compilation
-```bash
-# Build frontend assets
-npm run build
-
-# Or for development with hot reload
-npm run dev
-```
-
-#### 7. Start Development Server
-```bash
-# Option 1: Use the custom dev script (Recommended)
+# Start development
 composer run dev
-
-# Option 2: Individual commands
-php artisan serve &
-php artisan queue:work &
-npm run dev
 ```
 
-### 🔧 Post-Installation Setup
+## 🧪 Testing
 
-#### Create Admin User
 ```bash
-php artisan tinker
-```
-```php
-$user = App\Models\User::create([
-    'name' => 'Admin User',
-    'email' => 'admin@example.com',
-    'password' => bcrypt('password'),
-    'email_verified_at' => now(),
-]);
+# Run all tests
+composer test
+
+# Run with coverage
+php artisan test --coverage
+
+# Run specific tests
+php artisan test --filter=AuthenticationApiTest
 ```
 
-#### Setup Permissions (Optional)
+## 🐳 Docker Development
+
 ```bash
-php artisan tinker
-```
-```php
-// Create roles and permissions
-$role = Spatie\Permission\Models\Role::create(['name' => 'admin']);
-$permission = Spatie\Permission\Models\Permission::create(['name' => 'manage users']);
-$role->givePermissionTo($permission);
+# Start all services
+docker-compose up -d
 
-// Assign role to user
-$user = App\Models\User::find(1);
-$user->assignRole('admin');
+# Access services
+# App: http://localhost:8000
+# phpMyAdmin: http://localhost:8080
+# MailHog: http://localhost:8025
 ```
 
-## 🗄 Database Structure
+## 🤝 Contributing
 
-Citadel includes a well-structured database schema designed for scalability and security:
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### 📊 Core Tables
+## 📄 License
 
-| Table | Purpose | Key Features |
-|-------|---------|--------------|
-| `users` | User authentication and profiles | Email verification, timestamps |
-| `password_reset_tokens` | Password reset functionality | Secure token-based reset |
-| `sessions` | User session management | IP tracking, user agent logging |
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-### 🔐 OAuth2 Tables (Laravel Passport)
+## 🙏 Acknowledgments
 
-| Table | Purpose | Description |
-|-------|---------|-------------|
-| `oauth_auth_codes` | Authorization codes | Temporary codes for OAuth flow |
-| `oauth_access_tokens` | API access tokens | Long-lived authentication tokens |
-| `oauth_refresh_tokens` | Token refresh | Refresh expired access tokens |
-| `oauth_clients` | OAuth clients | Registered applications |
-| `oauth_device_codes` | Device authorization | Device flow support |
-
-### 🚀 Performance & Caching Tables
-
-| Table | Purpose | Features |
-|-------|---------|----------|
-| `cache` | Application cache | Key-value caching system |
-| `jobs` | Background job queue | Retry logic, failure handling |
-
-### 📁 Media Tables (Spatie Medialibrary)
-
-When using the media library package, additional tables are created:
-
-| Table | Purpose | Features |
-|-------|---------|----------|
-| `media` | File metadata | MIME types, sizes, conversions |
-
-### 🔑 Permission Tables (Spatie Permission)
-
-For role-based access control:
-
-| Table | Purpose | Features |
-|-------|---------|----------|
-| `roles` | User roles | Hierarchical roles |
-| `permissions` | System permissions | Granular access control |
-| `role_has_permissions` | Role-permission mapping | Many-to-many relationship |
-| `model_has_roles` | User-role assignment | Polymorphic relationships |
-
-### 🔍 Search Tables (Laravel Scout)
-
-Scout may create additional tables depending on the driver used.
-
-## 🔧 Configuration
-
-### Citadel Configuration
-
-Citadel includes a comprehensive configuration system that allows you to customize behavior without modifying core code. The configuration is stored in `config/citadel.php`.
+- [Laravel Framework](https://laravel.com) - The web artisans framework
+- [Spatie](https://spatie.be) - Amazing Laravel packages
+- [Pest PHP](https://pestphp.com) - Modern testing framework
+- [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
 
 #### Key Configuration Options
 
