@@ -10,6 +10,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release preparation for Packagist
 
+## [1.1.0] - 2025-07-29
+
+### Added
+- **Citadel Configuration System**: Comprehensive configuration management with environment variable support
+- **Dot Notation Permissions**: Flexible permission system with wildcard support (e.g., `users.*`, `media.*`)
+- **Spatie Query Builder Integration**: Advanced API querying with filtering, sorting, field selection, and relationship inclusion
+- **Permission Helper Functions**: Wildcard-aware permission checking with `can_wildcard()` and `authorize_wildcard()`
+- **Configurable Super Admin Role**: Environment-configurable super admin role name via `CITADEL_SUPER_ADMIN_ROLE`
+- **Enhanced Database Seeder**: Role and permission seeder with configurable role names and wildcard permissions
+- **API Controller Organization**: Moved all API controllers to `App\Http\Controllers\Api` namespace for better organization
+- **Comprehensive Helper Functions**: Utility functions for configuration access and permission management
+
+### Changed
+- **Permission Structure**: Migrated from space-separated to dot notation permissions (e.g., `manage users` → `users.manage`)
+- **API Routes**: Updated to use organized Api controller namespace
+- **UserController**: Enhanced with Spatie Query Builder for flexible API queries
+- **AppServiceProvider**: Updated to use configurable super admin role name
+- **Database Seeders**: Enhanced to support configurable role names and wildcard permissions
+
+### Enhanced
+- **API Querying**: Added support for advanced query parameters:
+  - Filtering: `?filter[name]=john&filter[email]=example.com`
+  - Sorting: `?sort=name,-created_at`
+  - Field Selection: `?fields[users]=id,name,email`
+  - Relationship Inclusion: `?include=roles,permissions`
+  - Pagination: `?page[size]=10&page[number]=2`
+- **Permission Management**: Wildcard permissions allow efficient role management
+- **Configuration Flexibility**: Environment-based configuration for all major settings
+
+### Documentation
+- **CITADEL_CONFIG.md**: Complete configuration system documentation
+- **DOT_NOTATION_PERMISSIONS.md**: Detailed permission system implementation guide
+- **.env.citadel.example**: Example environment variables for easy setup
+- **README.md**: Updated with Citadel configuration and QueryBuilder usage examples
+
+### Files Added
+- `config/citadel.php` - Main configuration file
+- `app/helpers.php` - Helper functions with autoload support
+- `database/seeders/RolesAndPermissionsSeeder.php` - Enhanced seeder with wildcard permissions
+- `CITADEL_CONFIG.md` - Configuration documentation
+- `DOT_NOTATION_PERMISSIONS.md` - Permission system guide
+- `.env.citadel.example` - Environment variable examples
+
+### Files Modified
+- `app/Providers/AppServiceProvider.php` - Configurable super admin role support
+- `app/Http/Controllers/Api/UserController.php` - QueryBuilder integration and dot notation permissions
+- `app/Http/Controllers/Api/MediaController.php` - Dot notation permissions
+- `database/seeders/DatabaseSeeder.php` - Enhanced with configurable roles
+- `routes/api.php` - Updated for Api namespace controllers
+- `composer.json` - Added helper functions autoloading
+- `README.md` - Comprehensive documentation updates
+
 ## [1.0.0] - 2025-07-28
 
 ### Added
