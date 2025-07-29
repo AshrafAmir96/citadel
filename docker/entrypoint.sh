@@ -21,23 +21,23 @@ if [ ! -f .env ]; then
 fi
 
 # Run database migrations
-php artisan migrate --force
+php artisan migrate:fresh --force
 
-# Generate Passport keys
-php artisan passport:keys --force
+# Run only the roles and permissions seeder (not the full DatabaseSeeder)
+php artisan db:seed --class=RolesAndPermissionsSeeder --force
+
+# Skip Passport keys generation for now (can be done manually later)
+# php artisan passport:keys --force
 
 # Clear and cache configuration
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Set permissions
-chown -R appuser:appgroup /var/www/html
-chmod -R 755 /var/www/html
-chmod -R 775 /var/www/html/storage
-chmod -R 775 /var/www/html/bootstrap/cache
-
 echo "Laravel application setup complete!"
+
+# Create supervisor log directory with proper permissions
+mkdir -p /tmp/supervisor
 
 # Start supervisord
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
