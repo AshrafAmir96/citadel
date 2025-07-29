@@ -486,6 +486,62 @@ Scout may create additional tables depending on the driver used.
 
 ## 🔧 Configuration
 
+### Citadel Configuration
+
+Citadel includes a comprehensive configuration system that allows you to customize behavior without modifying core code. The configuration is stored in `config/citadel.php`.
+
+#### Key Configuration Options
+
+```env
+# Citadel Configuration - Add to your .env file
+
+# Super Admin Role Name - This role will have all permissions
+CITADEL_SUPER_ADMIN_ROLE="Super Admin"
+
+# Default User Role - Assigned to new users upon registration  
+CITADEL_DEFAULT_USER_ROLE="User"
+
+# Permission Guard - Should match your authentication guard
+CITADEL_PERMISSION_GUARD="api"
+
+# Search Configuration
+CITADEL_SEARCH_PER_PAGE=15
+CITADEL_SEARCH_MAX_RESULTS=100
+
+# API Configuration
+CITADEL_API_PER_PAGE=15
+CITADEL_API_MAX_PER_PAGE=100
+CITADEL_API_RATE_LIMIT=60
+
+# Authentication Configuration (in hours/days/minutes)
+CITADEL_TOKEN_EXPIRATION_HOURS=24
+CITADEL_REFRESH_TOKEN_EXPIRATION_DAYS=30
+CITADEL_PASSWORD_RESET_EXPIRATION_MINUTES=60
+```
+
+#### Helper Functions
+
+Citadel provides convenient helper functions for accessing configuration:
+
+```php
+// Get any citadel configuration value
+$value = citadel_config('super_admin_role', 'Default');
+
+// Get the super admin role name
+$role = super_admin_role(); // Returns configured super admin role
+
+// Get the default user role
+$role = default_user_role(); // Returns configured default role
+
+// Check if user is super admin
+if (is_super_admin($user)) {
+    // User has super admin privileges
+}
+
+// Get the permission guard
+$guard = permission_guard(); // Returns configured guard
+```
+
 ### Environment Variables
 
 Key environment variables to configure:

@@ -25,7 +25,7 @@ class UserController extends Controller
     public function index(Request $request): JsonResponse
     {
         // Check if user has permission to view users
-        if (!$request->user()->can('manage users')) {
+        if (!$request->user()->can('users.view')) {
             return response()->json([
                 'success' => false,
                 'error' => [
@@ -90,7 +90,7 @@ class UserController extends Controller
         }
 
         // Users can only view their own profile unless they have admin permissions
-        if ($request->user()->id !== $user->id && !$request->user()->can('manage users')) {
+        if ($request->user()->id !== $user->id && !$request->user()->can('users.view')) {
             return response()->json([
                 'success' => false,
                 'error' => [
@@ -135,7 +135,7 @@ class UserController extends Controller
         }
 
         // Users can only update their own profile unless they have admin permissions
-        if ($request->user()->id !== $user->id && !$request->user()->can('manage users')) {
+        if ($request->user()->id !== $user->id && !$request->user()->can('users.update')) {
             return response()->json([
                 'success' => false,
                 'error' => [
@@ -176,7 +176,7 @@ class UserController extends Controller
     public function assignRole(Request $request, int $id): JsonResponse
     {
         // Check if user has permission to manage roles
-        if (!$request->user()->can('manage users')) {
+        if (!$request->user()->can('roles.assign')) {
             return response()->json([
                 'success' => false,
                 'error' => [
@@ -243,7 +243,7 @@ class UserController extends Controller
         }
 
         // Users can only view their own permissions unless they have admin permissions
-        if ($request->user()->id !== $user->id && !$request->user()->can('manage users')) {
+        if ($request->user()->id !== $user->id && !$request->user()->can('permissions.view')) {
             return response()->json([
                 'success' => false,
                 'error' => [
