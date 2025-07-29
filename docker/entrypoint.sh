@@ -20,8 +20,11 @@ if [ ! -f .env ]; then
     php artisan key:generate
 fi
 
-# Run database migrations
-php artisan migrate:fresh --force
+# Run database migrations (more stable than migrate:fresh)
+php artisan migrate --force
+
+# Clear any existing cache before seeding
+php artisan cache:clear || true
 
 # Run only the roles and permissions seeder (not the full DatabaseSeeder)
 php artisan db:seed --class=RolesAndPermissionsSeeder --force
