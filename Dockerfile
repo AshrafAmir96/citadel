@@ -114,8 +114,16 @@ FROM production AS development
 # Switch back to root for development tools
 USER root
 
-# Install development dependencies
-RUN apk add --no-cache git bash vim nano
+# Install development dependencies including build tools for PHP extensions
+RUN apk add --no-cache \
+    git \
+    bash \
+    vim \
+    nano \
+    autoconf \
+    g++ \
+    make \
+    linux-headers
 
 # Install Xdebug for development
 RUN pecl install xdebug && \
