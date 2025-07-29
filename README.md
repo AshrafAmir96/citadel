@@ -694,6 +694,21 @@ GET /api/users
 Authorization: Bearer {token}
 ```
 
+**Query Parameters (Laravel Query Builder):**
+- `filter[name]=john` - Filter by name
+- `filter[email]=example.com` - Filter by email
+- `filter[created_at]=2025-07-28` - Filter by creation date
+- `sort=name,-created_at` - Sort by name ascending, created_at descending
+- `fields[users]=id,name,email` - Select specific fields
+- `include=roles,permissions` - Include relationships
+- `page[size]=10&page[number]=2` - Pagination
+
+**Example with Query Builder:**
+```http
+GET /api/users?filter[name]=john&sort=-created_at&include=roles&fields[users]=id,name,email&page[size]=5
+Authorization: Bearer {token}
+```
+
 **Success Response (200):**
 ```json
 {
@@ -705,11 +720,24 @@ Authorization: Bearer {token}
                 "id": 1,
                 "name": "John Doe",
                 "email": "john@example.com",
-                "created_at": "2025-07-28T10:00:00.000000Z"
+                "created_at": "2025-07-28T10:00:00.000000Z",
+                "roles": [
+                    {
+                        "id": 1,
+                        "name": "admin",
+                        "guard_name": "api"
+                    }
+                ]
             }
         ],
-        "per_page": 15,
-        "total": 1
+        "per_page": 5,
+        "total": 1,
+        "links": {
+            "first": "http://localhost:8000/api/users?page=1",
+            "last": "http://localhost:8000/api/users?page=1",
+            "prev": null,
+            "next": null
+        }
     },
     "message": "Users retrieved successfully"
 }
@@ -732,6 +760,16 @@ GET /api/users/{id}
 Authorization: Bearer {token}
 ```
 
+**Query Parameters:**
+- `fields[users]=id,name,email` - Select specific fields
+- `include=roles,permissions` - Include relationships
+
+**Example:**
+```http
+GET /api/users/1?include=roles,permissions&fields[users]=id,name,email
+Authorization: Bearer {token}
+```
+
 **Success Response (200):**
 ```json
 {
@@ -740,7 +778,20 @@ Authorization: Bearer {token}
         "id": 1,
         "name": "John Doe",
         "email": "john@example.com",
-        "created_at": "2025-07-28T10:00:00.000000Z"
+        "roles": [
+            {
+                "id": 1,
+                "name": "admin",
+                "guard_name": "api"
+            }
+        ],
+        "permissions": [
+            {
+                "id": 1,
+                "name": "manage users",
+                "guard_name": "api"
+            }
+        ]
     },
     "message": "User retrieved successfully"
 }

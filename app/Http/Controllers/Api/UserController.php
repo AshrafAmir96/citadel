@@ -8,11 +8,19 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class UserController extends Controller
 {
     /**
      * Get all users (Admin only)
+     * 
+     * Supports Query Builder features:
+     * - Filtering: ?filter[name]=john&filter[email]=example.com
+     * - Sorting: ?sort=name,-created_at
+     * - Field Selection: ?fields[users]=id,name,email
+     * - Including Relations: ?include=roles,permissions
+     * - Pagination: ?page[size]=10&page[number]=2
      */
     public function index(Request $request): JsonResponse
     {
@@ -27,7 +35,31 @@ class UserController extends Controller
             ], 403);
         }
 
-        $users = User::paginate(15);
+        $users = QueryBuilder::for(User::class)
+            ->allowedFilters([
+                'name',
+                'email',
+                'created_at',
+                'updated_at',
+                'email_verified_at'
+            ])
+            ->allowedSorts([
+                'id',
+                'name', 
+                'email',
+                'created_at',
+                'updated_at'
+            ])
+            ->allowedFields([
+                'users' => ['id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at']
+            ])
+            ->allowedIncludes([
+                'roles',
+                'permissions'
+            ])
+            ->defaultSort('-created_at')
+            ->paginate($request->get('page.size', 15))
+            ->appends($request->query());
 
         return response()->json([
             'success' => true,
@@ -38,6 +70,10 @@ class UserController extends Controller
 
     /**
      * Get user by ID
+     * 
+     * Supports Query Builder features:
+     * - Field Selection: ?fields[users]=id,name,email
+     * - Including Relations: ?include=roles,permissions
      */
     public function show(Request $request, int $id): JsonResponse
     {
@@ -64,9 +100,19 @@ class UserController extends Controller
             ], 403);
         }
 
+        $userData = QueryBuilder::for(User::where('id', $id))
+            ->allowedFields([
+                'users' => ['id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at']
+            ])
+            ->allowedIncludes([
+                'roles',
+                'permissions'
+            ])
+            ->first();
+
         return response()->json([
             'success' => true,
-            'data' => $user,
+            'data' => $userData,
             'message' => 'User retrieved successfully'
         ]);
     }
