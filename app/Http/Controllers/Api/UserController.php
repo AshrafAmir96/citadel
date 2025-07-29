@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     /**
      * Get all users (Admin only)
-     * 
+     *
      * Supports Query Builder features:
      * - Filtering: ?filter[name]=john&filter[email]=example.com
      * - Sorting: ?sort=name,-created_at
@@ -25,13 +25,13 @@ class UserController extends Controller
     public function index(Request $request): JsonResponse
     {
         // Check if user has permission to view users
-        if (!$request->user()->can('users.view')) {
+        if (! $request->user()->can('users.view')) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'PERMISSION_DENIED',
                     'message' => 'You do not have permission to access this resource.',
-                ]
+                ],
             ], 403);
         }
 
@@ -41,21 +41,21 @@ class UserController extends Controller
                 'email',
                 'created_at',
                 'updated_at',
-                'email_verified_at'
+                'email_verified_at',
             ])
             ->allowedSorts([
                 'id',
-                'name', 
+                'name',
                 'email',
                 'created_at',
-                'updated_at'
+                'updated_at',
             ])
             ->allowedFields([
-                'users' => ['id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at']
+                'users' => ['id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at'],
             ])
             ->allowedIncludes([
                 'roles',
-                'permissions'
+                'permissions',
             ])
             ->defaultSort('-created_at')
             ->paginate($request->get('page.size', 15))
@@ -64,13 +64,13 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'data' => $users,
-            'message' => 'Users retrieved successfully'
+            'message' => 'Users retrieved successfully',
         ]);
     }
 
     /**
      * Get user by ID
-     * 
+     *
      * Supports Query Builder features:
      * - Field Selection: ?fields[users]=id,name,email
      * - Including Relations: ?include=roles,permissions
@@ -79,41 +79,41 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'USER_NOT_FOUND',
                     'message' => 'User not found.',
-                ]
+                ],
             ], 404);
         }
 
         // Users can only view their own profile unless they have admin permissions
-        if ($request->user()->id !== $user->id && !$request->user()->can('users.view')) {
+        if ($request->user()->id !== $user->id && ! $request->user()->can('users.view')) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'PERMISSION_DENIED',
                     'message' => 'You do not have permission to access this resource.',
-                ]
+                ],
             ], 403);
         }
 
         $userData = QueryBuilder::for(User::where('id', $id))
             ->allowedFields([
-                'users' => ['id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at']
+                'users' => ['id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at'],
             ])
             ->allowedIncludes([
                 'roles',
-                'permissions'
+                'permissions',
             ])
             ->first();
 
         return response()->json([
             'success' => true,
             'data' => $userData,
-            'message' => 'User retrieved successfully'
+            'message' => 'User retrieved successfully',
         ]);
     }
 
@@ -124,30 +124,30 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'USER_NOT_FOUND',
                     'message' => 'User not found.',
-                ]
+                ],
             ], 404);
         }
 
         // Users can only update their own profile unless they have admin permissions
-        if ($request->user()->id !== $user->id && !$request->user()->can('users.update')) {
+        if ($request->user()->id !== $user->id && ! $request->user()->can('users.update')) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'PERMISSION_DENIED',
                     'message' => 'You do not have permission to access this resource.',
-                ]
+                ],
             ], 403);
         }
 
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,'.$user->id,
         ]);
 
         if ($validator->fails()) {
@@ -156,8 +156,8 @@ class UserController extends Controller
                 'error' => [
                     'code' => 'VALIDATION_ERROR',
                     'message' => 'The given data was invalid.',
-                    'details' => $validator->errors()
-                ]
+                    'details' => $validator->errors(),
+                ],
             ], 422);
         }
 
@@ -166,7 +166,7 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'data' => $user->fresh(),
-            'message' => 'User updated successfully'
+            'message' => 'User updated successfully',
         ]);
     }
 
@@ -176,25 +176,25 @@ class UserController extends Controller
     public function assignRole(Request $request, int $id): JsonResponse
     {
         // Check if user has permission to manage roles
-        if (!$request->user()->can('roles.assign')) {
+        if (! $request->user()->can('roles.assign')) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'PERMISSION_DENIED',
                     'message' => 'You do not have permission to access this resource.',
-                ]
+                ],
             ], 403);
         }
 
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'USER_NOT_FOUND',
                     'message' => 'User not found.',
-                ]
+                ],
             ], 404);
         }
 
@@ -208,8 +208,8 @@ class UserController extends Controller
                 'error' => [
                     'code' => 'VALIDATION_ERROR',
                     'message' => 'The given data was invalid.',
-                    'details' => $validator->errors()
-                ]
+                    'details' => $validator->errors(),
+                ],
             ], 422);
         }
 
@@ -219,9 +219,9 @@ class UserController extends Controller
             'success' => true,
             'data' => [
                 'user' => $user,
-                'roles' => $user->roles->pluck('name')
+                'roles' => $user->roles->pluck('name'),
             ],
-            'message' => 'Role assigned successfully'
+            'message' => 'Role assigned successfully',
         ]);
     }
 
@@ -232,24 +232,24 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'USER_NOT_FOUND',
                     'message' => 'User not found.',
-                ]
+                ],
             ], 404);
         }
 
         // Users can only view their own permissions unless they have admin permissions
-        if ($request->user()->id !== $user->id && !$request->user()->can('permissions.view')) {
+        if ($request->user()->id !== $user->id && ! $request->user()->can('permissions.view')) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'PERMISSION_DENIED',
                     'message' => 'You do not have permission to access this resource.',
-                ]
+                ],
             ], 403);
         }
 
@@ -258,9 +258,9 @@ class UserController extends Controller
             'data' => [
                 'roles' => $user->roles->pluck('name'),
                 'permissions' => $user->getAllPermissions()->pluck('name'),
-                'direct_permissions' => $user->getDirectPermissions()->pluck('name')
+                'direct_permissions' => $user->getDirectPermissions()->pluck('name'),
             ],
-            'message' => 'User permissions retrieved successfully'
+            'message' => 'User permissions retrieved successfully',
         ]);
     }
 }

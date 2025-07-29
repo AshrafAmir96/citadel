@@ -1,11 +1,10 @@
 <?php
 
-if (!function_exists('citadel_config')) {
+if (! function_exists('citadel_config')) {
     /**
      * Get a citadel configuration value.
      *
-     * @param string $key
-     * @param mixed $default
+     * @param  mixed  $default
      * @return mixed
      */
     function citadel_config(string $key, $default = null)
@@ -14,11 +13,9 @@ if (!function_exists('citadel_config')) {
     }
 }
 
-if (!function_exists('super_admin_role')) {
+if (! function_exists('super_admin_role')) {
     /**
      * Get the configured super admin role name.
-     *
-     * @return string
      */
     function super_admin_role(): string
     {
@@ -26,11 +23,9 @@ if (!function_exists('super_admin_role')) {
     }
 }
 
-if (!function_exists('default_user_role')) {
+if (! function_exists('default_user_role')) {
     /**
      * Get the configured default user role name.
-     *
-     * @return string
      */
     function default_user_role(): string
     {
@@ -38,18 +33,17 @@ if (!function_exists('default_user_role')) {
     }
 }
 
-if (!function_exists('is_super_admin')) {
+if (! function_exists('is_super_admin')) {
     /**
      * Check if a user has the super admin role.
      *
-     * @param \App\Models\User|null $user
-     * @return bool
+     * @param  \App\Models\User|null  $user
      */
     function is_super_admin($user = null): bool
     {
         $user = $user ?? auth()->user();
-        
-        if (!$user) {
+
+        if (! $user) {
             return false;
         }
 
@@ -57,11 +51,9 @@ if (!function_exists('is_super_admin')) {
     }
 }
 
-if (!function_exists('permission_guard')) {
+if (! function_exists('permission_guard')) {
     /**
      * Get the configured permission guard.
-     *
-     * @return string
      */
     function permission_guard(): string
     {
@@ -69,20 +61,18 @@ if (!function_exists('permission_guard')) {
     }
 }
 
-if (!function_exists('can_wildcard')) {
+if (! function_exists('can_wildcard')) {
     /**
      * Check if a user has permission using wildcard patterns.
      * Supports checking permissions like 'users.*' for any user permission.
      *
-     * @param \App\Models\User|null $user
-     * @param string $permission
-     * @return bool
+     * @param  \App\Models\User|null  $user
      */
     function can_wildcard($user, string $permission): bool
     {
         $user = $user ?? auth()->user();
-        
-        if (!$user) {
+
+        if (! $user) {
             return false;
         }
 
@@ -101,12 +91,12 @@ if (!function_exists('can_wildcard')) {
         if (count($parts) >= 2) {
             $resource = $parts[0];
             // Check if user has {resource}.* permission
-            if ($user->can($resource . '.*')) {
+            if ($user->can($resource.'.*')) {
                 return true;
             }
-            
+
             // Check if user has {resource}.manage permission (implies all actions)
-            if ($user->can($resource . '.manage')) {
+            if ($user->can($resource.'.manage')) {
                 return true;
             }
         }
@@ -115,17 +105,17 @@ if (!function_exists('can_wildcard')) {
     }
 }
 
-if (!function_exists('authorize_wildcard')) {
+if (! function_exists('authorize_wildcard')) {
     /**
      * Authorize a user with wildcard permission support, throw exception if not authorized.
      *
-     * @param string $permission
-     * @param \App\Models\User|null $user
+     * @param  \App\Models\User|null  $user
+     *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     function authorize_wildcard(string $permission, $user = null): void
     {
-        if (!can_wildcard($user, $permission)) {
+        if (! can_wildcard($user, $permission)) {
             throw new \Illuminate\Auth\Access\AuthorizationException('This action is unauthorized.');
         }
     }

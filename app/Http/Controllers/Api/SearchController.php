@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SearchController extends Controller
 {
@@ -27,8 +27,8 @@ class SearchController extends Controller
                 'error' => [
                     'code' => 'VALIDATION_ERROR',
                     'message' => 'The given data was invalid.',
-                    'details' => $validator->errors()
-                ]
+                    'details' => $validator->errors(),
+                ],
             ], 422);
         }
 
@@ -62,15 +62,15 @@ class SearchController extends Controller
                     'offset' => $offset,
                     'total' => $results->count(),
                 ],
-                'message' => 'Search completed successfully'
+                'message' => 'Search completed successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'SEARCH_ERROR',
-                    'message' => 'Search failed: ' . $e->getMessage(),
-                ]
+                    'message' => 'Search failed: '.$e->getMessage(),
+                ],
             ], 500);
         }
     }

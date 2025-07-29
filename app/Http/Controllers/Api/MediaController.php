@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -16,13 +16,13 @@ class MediaController extends Controller
     public function store(Request $request): JsonResponse
     {
         // Check if user has permission to upload media
-        if (!$request->user()->can('media.upload')) {
+        if (! $request->user()->can('media.upload')) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'PERMISSION_DENIED',
                     'message' => 'You do not have permission to upload media.',
-                ]
+                ],
             ], 403);
         }
 
@@ -37,8 +37,8 @@ class MediaController extends Controller
                 'error' => [
                     'code' => 'VALIDATION_ERROR',
                     'message' => 'The given data was invalid.',
-                    'details' => $validator->errors()
-                ]
+                    'details' => $validator->errors(),
+                ],
             ], 422);
         }
 
@@ -61,7 +61,7 @@ class MediaController extends Controller
                     'collection_name' => $media->collection_name,
                     'url' => $media->getUrl(),
                 ],
-                'message' => 'File uploaded successfully'
+                'message' => 'File uploaded successfully',
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -69,8 +69,8 @@ class MediaController extends Controller
                 'error' => [
                     'code' => 'UPLOAD_ERROR',
                     'message' => 'Failed to upload file.',
-                    'details' => $e->getMessage()
-                ]
+                    'details' => $e->getMessage(),
+                ],
             ], 500);
         }
     }
@@ -81,13 +81,13 @@ class MediaController extends Controller
     public function index(Request $request): JsonResponse
     {
         // Check if user has permission to view media
-        if (!$request->user()->can('media.view')) {
+        if (! $request->user()->can('media.view')) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'PERMISSION_DENIED',
                     'message' => 'You do not have permission to view media.',
-                ]
+                ],
             ], 403);
         }
 
@@ -109,7 +109,7 @@ class MediaController extends Controller
         return response()->json([
             'success' => true,
             'data' => $mediaData,
-            'message' => 'Media files retrieved successfully'
+            'message' => 'Media files retrieved successfully',
         ]);
     }
 
@@ -119,25 +119,25 @@ class MediaController extends Controller
     public function destroy(Request $request, int $id): JsonResponse
     {
         // Check if user has permission to delete media
-        if (!$request->user()->can('media.delete')) {
+        if (! $request->user()->can('media.delete')) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'PERMISSION_DENIED',
                     'message' => 'You do not have permission to delete media.',
-                ]
+                ],
             ], 403);
         }
 
         $media = Media::find($id);
 
-        if (!$media || $media->model_id !== $request->user()->id) {
+        if (! $media || $media->model_id !== $request->user()->id) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'MEDIA_NOT_FOUND',
                     'message' => 'Media file not found or you do not have permission to delete it.',
-                ]
+                ],
             ], 404);
         }
 
@@ -146,7 +146,7 @@ class MediaController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Media file deleted successfully'
+                'message' => 'Media file deleted successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -154,8 +154,8 @@ class MediaController extends Controller
                 'error' => [
                     'code' => 'DELETE_ERROR',
                     'message' => 'Failed to delete media file.',
-                    'details' => $e->getMessage()
-                ]
+                    'details' => $e->getMessage(),
+                ],
             ], 500);
         }
     }

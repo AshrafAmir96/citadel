@@ -9,14 +9,14 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\Contracts\OAuthenticatable;
 use Laravel\Passport\HasApiTokens;
 use Laravel\Scout\Searchable;
-use Spatie\Permission\Traits\HasRoles;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements OAuthenticatable, HasMedia
+class User extends Authenticatable implements HasMedia, OAuthenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens, Searchable, HasRoles, InteractsWithMedia;
+    use HasApiTokens, HasFactory, HasRoles, InteractsWithMedia, Notifiable, Searchable;
 
     /**
      * The attributes that are mass assignable.

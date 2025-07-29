@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Laravel\Passport\TokenRepository;
 use Laravel\Passport\RefreshTokenRepository;
+use Laravel\Passport\TokenRepository;
 
 class AuthController extends Controller
 {
@@ -31,8 +31,8 @@ class AuthController extends Controller
                 'error' => [
                     'code' => 'VALIDATION_ERROR',
                     'message' => 'The given data was invalid.',
-                    'details' => $validator->errors()
-                ]
+                    'details' => $validator->errors(),
+                ],
             ], 422);
         }
 
@@ -55,7 +55,7 @@ class AuthController extends Controller
             ],
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'message' => 'User registered successfully'
+            'message' => 'User registered successfully',
         ], 201);
     }
 
@@ -75,18 +75,18 @@ class AuthController extends Controller
                 'error' => [
                     'code' => 'VALIDATION_ERROR',
                     'message' => 'The given data was invalid.',
-                    'details' => $validator->errors()
-                ]
+                    'details' => $validator->errors(),
+                ],
             ], 422);
         }
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (! Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'AUTHENTICATION_ERROR',
                     'message' => 'Invalid credentials',
-                ]
+                ],
             ], 401);
         }
 
@@ -103,7 +103,7 @@ class AuthController extends Controller
             ],
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'message' => 'User logged in successfully'
+            'message' => 'User logged in successfully',
         ]);
     }
 
@@ -113,17 +113,17 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         $token = $request->user()->token();
-        
+
         // Revoke the token
         $tokenRepository = app(TokenRepository::class);
         $refreshTokenRepository = app(RefreshTokenRepository::class);
-        
+
         $tokenRepository->revokeAccessToken($token->id);
         $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($token->id);
 
         return response()->json([
             'success' => true,
-            'message' => 'User logged out successfully'
+            'message' => 'User logged out successfully',
         ]);
     }
 
@@ -135,7 +135,7 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'data' => $request->user(),
-            'message' => 'User retrieved successfully'
+            'message' => 'User retrieved successfully',
         ]);
     }
 }

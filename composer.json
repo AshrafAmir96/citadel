@@ -94,6 +94,33 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
+        ],
+        "pint": [
+            "./vendor/bin/pint"
+        ],
+        "pint-test": [
+            "./vendor/bin/pint --test"
+        ],
+        "format": [
+            "@pint"
+        ],
+        "analyse": [
+            "./vendor/bin/phpstan analyse --memory-limit=2G"
+        ],
+        "quality": [
+            "@pint",
+            "@analyse",
+            "@test"
+        ],
+        "fresh": [
+            "@php artisan migrate:fresh --seed --ansi"
+        ],
+        "setup": [
+            "@composer install --no-interaction",
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@fresh",
+            "@php artisan passport:install --ansi"
         ]
     },
     "extra": {

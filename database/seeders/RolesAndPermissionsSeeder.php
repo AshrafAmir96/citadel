@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use App\Models\User;
+use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -31,7 +31,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'users.delete',
             'users.manage',
             'users.*', // Wildcard for all user permissions
-            
+
             // Role management permissions
             'roles.view',
             'roles.create',
@@ -40,7 +40,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'roles.manage',
             'roles.assign',
             'roles.*', // Wildcard for all role permissions
-            
+
             // Permission management
             'permissions.view',
             'permissions.create',
@@ -48,7 +48,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'permissions.delete',
             'permissions.manage',
             'permissions.*', // Wildcard for all permission operations
-            
+
             // Media management permissions
             'media.view',
             'media.upload',
@@ -56,19 +56,19 @@ class RolesAndPermissionsSeeder extends Seeder
             'media.delete',
             'media.manage',
             'media.*', // Wildcard for all media permissions
-            
+
             // System management permissions
             'system.manage',
             'system.configure',
             'system.backup',
             'system.restore',
             'system.*', // Wildcard for all system permissions
-            
+
             // Analytics permissions
             'analytics.view',
             'analytics.export',
             'analytics.*', // Wildcard for all analytics permissions
-            
+
             // API permissions
             'api.access',
             'api.admin',
@@ -105,11 +105,11 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Assign permissions to roles
         // Super Admin gets all permissions (handled by Gate in AppServiceProvider)
-        
+
         // Admin gets wildcard permissions for most resources except system
         $admin->syncPermissions([
             'users.*',        // All user permissions
-            'roles.*',        // All role permissions  
+            'roles.*',        // All role permissions
             'permissions.*',  // All permission operations
             'media.*',        // All media permissions
             'analytics.*',    // All analytics permissions
