@@ -2,11 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\MediaController;
-use App\Http\Controllers\SearchController;
-use App\Http\Controllers\ApiDocumentationController;
+
+// API Controllers (organized in Api namespace for better structure)
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\MediaController;
+use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\ApiDocumentationController;
 
 // API Documentation
 Route::get('/', [ApiDocumentationController::class, 'index']);

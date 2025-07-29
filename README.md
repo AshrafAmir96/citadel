@@ -185,6 +185,7 @@ Citadel is built on top of carefully selected, production-tested packages:
 | Component | Status | Description |
 |-----------|--------|-------------|
 | **API Routes** | ✅ Complete | All routes defined in `routes/api.php` |
+| **API Controllers** | ✅ Complete | Organized in `App\Http\Controllers\Api` namespace |
 | **Authentication Controller** | ✅ Complete | Register, login, logout, current user |
 | **User Management Controller** | ✅ Complete | CRUD operations with permission checks |
 | **Media Controller** | ✅ Complete | File upload, list, and delete operations |
@@ -197,29 +198,44 @@ Citadel is built on top of carefully selected, production-tested packages:
 
 ### 🏗️ Controllers Created
 
-1. **`AuthController`** - Authentication endpoints
+All API controllers are organized in the `App\Http\Controllers\Api` namespace for better structure and maintainability:
+
+1. **`Api\AuthController`** - Authentication endpoints
    - `register()` - User registration with validation
    - `login()` - User authentication with OAuth2
    - `logout()` - Token revocation
    - `user()` - Get current authenticated user
 
-2. **`UserController`** - User management endpoints
+2. **`Api\UserController`** - User management endpoints
    - `index()` - List all users (admin only)
    - `show()` - Get user by ID (with permission checks)
    - `update()` - Update user profile (with permission checks)
    - `assignRole()` - Assign role to user (admin only)
    - `permissions()` - Get user permissions
 
-3. **`MediaController`** - File management endpoints
+3. **`Api\MediaController`** - File management endpoints
    - `store()` - Upload files with validation (10MB limit)
    - `index()` - List user's media files
    - `destroy()` - Delete media files
 
-4. **`SearchController`** - Search functionality
+4. **`Api\SearchController`** - Search functionality
    - `search()` - Search users with Laravel Scout
 
-5. **`ApiDocumentationController`** - API documentation
+5. **`Api\ApiDocumentationController`** - API documentation
    - `index()` - Overview of all available endpoints
+
+### 📁 Controller Structure
+
+```
+app/Http/Controllers/
+├── Controller.php              # Base controller
+└── Api/                       # API controllers namespace
+    ├── ApiDocumentationController.php
+    ├── AuthController.php
+    ├── MediaController.php
+    ├── SearchController.php
+    └── UserController.php
+```
 
 ### 🚧 Next Steps Required
 
