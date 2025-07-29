@@ -41,6 +41,12 @@ Get Citadel running in under 5 minutes:
 git clone <repository-url> citadel
 cd citadel
 docker-compose up -d
+
+# Create your first super admin user
+docker-compose exec app php artisan citadel:create-super-admin \
+  --email=admin@yourcompany.com \
+  --password=SecurePassword123! \
+  --name="Admin User"
 ```
 **🌐 Access:** http://localhost:8000
 
@@ -51,6 +57,13 @@ cd citadel
 composer install && npm install
 cp .env.example .env && php artisan key:generate
 php artisan migrate && php artisan passport:install
+
+# Create your first super admin user
+php artisan citadel:create-super-admin \
+  --email=admin@yourcompany.com \
+  --password=SecurePassword123! \
+  --name="Admin User"
+
 composer run dev
 ```
 **🌐 Access:** http://localhost:8000
@@ -60,6 +73,12 @@ composer run dev
 git clone <repository-url> citadel
 cd citadel
 ./vendor/bin/sail up -d
+
+# Create your first super admin user
+./vendor/bin/sail artisan citadel:create-super-admin \
+  --email=admin@yourcompany.com \
+  --password=SecurePassword123! \
+  --name="Admin User"
 ```
 **🌐 Access:** http://localhost
 
@@ -68,9 +87,36 @@ cd citadel
 ### 🔐 Authentication & Authorization
 - **Laravel Passport OAuth2** - Complete OAuth2 server implementation
 - **Role-Based Access Control** - Spatie Laravel Permission with dot notation (`users.*`, `media.*`)
-- **Configurable Super Admin** - Environment-configurable super admin role
+- **Super Admin Management** - Dedicated command for creating super admin users
 - **JWT Token Authentication** - Secure API authentication
 - **Permission Helper Functions** - Wildcard-aware permission checking
+
+#### 🏰 Super Admin Creation Command
+Citadel includes a powerful interactive command for creating super admin users:
+
+```bash
+# Interactive mode with confirmation prompts
+php artisan citadel:create-super-admin
+
+# Direct mode with parameters
+php artisan citadel:create-super-admin \
+  --email=admin@example.com \
+  --password=SecurePassword123! \
+  --name="Super Admin"
+
+# Docker environment
+docker-compose exec app php artisan citadel:create-super-admin \
+  --email=admin@example.com \
+  --password=SecurePassword123! \
+  --name="Super Admin"
+```
+
+**Features:**
+- ✅ **Interactive UI** - Beautiful table formatting with confirmation prompts
+- ✅ **Validation** - Email uniqueness and password strength validation
+- ✅ **Role Assignment** - Automatically assigns "Super Admin" role with all permissions
+- ✅ **Success Feedback** - Clear confirmation with user details and next steps
+- ✅ **Docker Compatible** - Works seamlessly in containerized environments
 
 ### 🎯 Modern API Design
 - **Query Builder Integration** - Spatie Laravel Query Builder for flexible API queries
@@ -119,10 +165,56 @@ app/Http/Controllers/Api/
 └── ApiDocumentationController.php # API documentation
 ```
 
+### Artisan Commands
+```
+app/Console/Commands/
+└── SuperAdminCreation.php      # Interactive super admin creation command
+```
+
+### Documentation Structure
+```
+├── README.md                   # Project overview and quick start
+├── QUICKSTART.md              # 5-minute setup guide
+├── DOCKER.md                  # Docker development guide
+├── COMMANDS.md                # Artisan commands reference
+├── DEPLOYMENT.md              # Production deployment guide
+├── CHANGELOG.md               # Version history and changes
+└── CONTRIBUTING.md            # Contribution guidelines
+```
+
 ### Configuration System
 - **`config/citadel.php`** - Centralized configuration
 - **`app/helpers.php`** - Helper functions with autoloading
 - **`.env.citadel.example`** - Environment variable examples
+
+## 🔧 Available Commands
+
+### Super Admin Management
+```bash
+# Create a new super admin user (interactive)
+php artisan citadel:create-super-admin
+
+# Create super admin with parameters
+php artisan citadel:create-super-admin --email=admin@example.com --password=SecurePass123! --name="Admin"
+
+# View all available citadel commands  
+php artisan list citadel
+```
+
+### Development Commands  
+```bash
+# Generate API documentation
+php artisan scramble:generate
+
+# Clear all caches
+php artisan optimize:clear
+
+# Run tests
+./vendor/bin/pest
+
+# Run code analysis
+./vendor/bin/phpstan analyse
+```
 
 
 ## 🤝 Contributing

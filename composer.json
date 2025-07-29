@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "owlfice/citadel",
     "type": "project",
-    "description": "Citadel - A production-ready Laravel backend boilerplate with OAuth2, permissions, media management, and full-text search capabilities.",
+    "description": "Citadel - A production-ready Laravel backend boilerplate with OAuth2, permissions, media management, full-text search capabilities, and interactive admin commands.",
     "keywords": [
         "laravel",
         "boilerplate",
@@ -17,7 +17,10 @@
         "redis",
         "docker",
         "pest",
-        "backend"
+        "backend",
+        "admin",
+        "artisan",
+        "commands"
     ],
     "homepage": "https://github.com/AshrafAmir96/citadel",
     "license": "MIT",

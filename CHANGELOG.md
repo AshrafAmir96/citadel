@@ -10,6 +10,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release preparation for Packagist
 
+## [1.2.0] - 2025-07-29
+
+### Added
+- **🏰 Super Admin Creation Command**: Interactive Artisan command `citadel:create-super-admin` for creating super administrator users
+  - Beautiful table formatting with confirmation prompts
+  - Email uniqueness validation and password strength requirements
+  - Automatic "Super Admin" role assignment with all permissions
+  - Docker and Laravel Sail compatibility
+  - Success feedback with user details and helpful next steps
+- **Command Documentation**: Comprehensive documentation in `COMMANDS.md` with usage examples and troubleshooting
+- **Enhanced README**: Updated quick start guides to include super admin creation steps
+- **Docker Integration**: Full support for super admin creation in containerized environments
+
+### Fixed
+- **Docker Supervisor Configuration**: Updated supervisord to use `/tmp/supervisor` for log files to resolve permission issues
+- **Container Stability**: Improved Docker container startup reliability
+- **Database Migration Conflicts**: Resolved duplicate migration issues for clean database setup
+
+### Changed
+- **User Model**: Improved compatibility with Laravel Scout and Meilisearch integration
+- **Entrypoint Script**: Enhanced Docker entrypoint for better error handling and targeted seeding
+
 ## [1.1.0] - 2025-07-29
 
 ### Added

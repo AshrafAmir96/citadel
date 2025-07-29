@@ -12,7 +12,15 @@ docker-compose up -d
 
 # Wait for services to be ready (30-60 seconds)
 docker-compose logs -f app
+
+# Create your first super admin user
+docker-compose exec app php artisan citadel:create-super-admin \
+  --email=admin@yourcompany.com \
+  --password=SecurePassword123! \
+  --name="Admin User"
 ```
+
+**✅ Your Citadel application is now ready at http://localhost:8000**
 
 ## 🌐 Service Access Points
 
@@ -38,6 +46,25 @@ docker-compose logs -f app
 
 ## ⚡ Essential Docker Commands
 
+### 🏰 Application Management
+```bash
+# Create super admin user (interactive)
+docker-compose exec app php artisan citadel:create-super-admin
+
+# Create super admin user (direct)
+docker-compose exec app php artisan citadel:create-super-admin \
+  --email=admin@example.com \
+  --password=SecurePassword123! \
+  --name="Super Admin"
+
+# Run database migrations and seeders
+docker-compose exec app php artisan migrate:fresh --seed
+
+# Generate API documentation
+docker-compose exec app php artisan scramble:generate
+```
+
+### 🐳 Container Management
 ```bash
 # Start all services in background
 docker-compose up -d
