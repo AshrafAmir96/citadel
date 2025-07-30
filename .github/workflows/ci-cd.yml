@@ -295,18 +295,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           
-      - name: Install semantic-release
-        run: |
-          npm install -g semantic-release
-          npm install -g @semantic-release/commit-analyzer
-          npm install -g @semantic-release/release-notes-generator
-          npm install -g @semantic-release/changelog
-          npm install -g @semantic-release/git
-          npm install -g @semantic-release/github
+      - name: Install dependencies
+        run: npm ci
           
       - name: Run semantic-release
         id: semantic
-        run: semantic-release --extends ./.releaserc.github.json
+        run: npx semantic-release --extends ./.releaserc.github.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
