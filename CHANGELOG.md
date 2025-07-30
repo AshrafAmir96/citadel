@@ -1,3 +1,37 @@
+# 1.0.0 (2025-07-30)
+
+
+### Bug Fixes
+
+* Lower minimum test coverage requirement from 80% to 40% ([e7c9f0b](https://github.com/AshrafAmir96/citadel/commit/e7c9f0b3f5eba6202d47c6fa534ea55c6791c12f))
+* Refactor app_version function for improved readability and consistency ([89ff066](https://github.com/AshrafAmir96/citadel/commit/89ff0662d57d25060d988d252fb3c70c5baad883))
+* Remove obsolete error patterns from phpstan.neon configuration ([bb38536](https://github.com/AshrafAmir96/citadel/commit/bb38536735a811133e4e414a9ed9bb6a8ba4b340))
+* resolve Passport client setup for CI/CD ([480f71e](https://github.com/AshrafAmir96/citadel/commit/480f71ed137ccc72312f167d1101fae5b79bb9d3))
+* update homepage URL in composer.json ([f69660d](https://github.com/AshrafAmir96/citadel/commit/f69660da3b8a2465a1da01c2b378eaec2fd49da8))
+* update project name and author details in composer.json ([24f62af](https://github.com/AshrafAmir96/citadel/commit/24f62afcfa02efb797966d61a3187e7a7b9d1b00))
+
+
+### Features
+
+* Add .releaserc.gitlab.json configuration for semantic-release ([e1aee18](https://github.com/AshrafAmir96/citadel/commit/e1aee18382961c767b936bcf81268583b0b0bc7d))
+* Add GitHub Actions CI/CD integration and platform switcher ([c20157f](https://github.com/AshrafAmir96/citadel/commit/c20157f194fc0113bac9235c937966a925a4469f))
+* add Meilisearch PHP client dependency and update Docker configurations ([809185e](https://github.com/AshrafAmir96/citadel/commit/809185ec42a24ee4daaf86d1e287994b403bf4ab))
+* Add role management command with detailed statistics and output formats ([0e6a1cf](https://github.com/AshrafAmir96/citadel/commit/0e6a1cf179b477e9d7a76ee1a957881cc1281d12))
+* Add semantic-release plugins for commit analysis and release notes generation ([e32ddb5](https://github.com/AshrafAmir96/citadel/commit/e32ddb561637bac8d6a53ac04debf08e8e92ff8f))
+* Enable wildcard permissions in configuration ([0b4d0ee](https://github.com/AshrafAmir96/citadel/commit/0b4d0ee793b4433a69c5244767555c605449a3ae))
+* enhance development environment by adding additional build tools and dependencies in Dockerfile ([246c4d2](https://github.com/AshrafAmir96/citadel/commit/246c4d2372c4872eab4112422f2025475796160f))
+* Enhance Passport setup in tests and update CI/CD workflow for artifact uploads ([e0adea0](https://github.com/AshrafAmir96/citadel/commit/e0adea07a3433175e3e7e0badbc37e0eecf9bb33))
+* enhance user retrieval with Query Builder support for filtering, sorting, and pagination ([fe5fa6d](https://github.com/AshrafAmir96/citadel/commit/fe5fa6d5f7881fa214c544fddbea49007490205a))
+* implement comprehensive configuration system with dot notation permissions and role management ([e696e35](https://github.com/AshrafAmir96/citadel/commit/e696e35581c88c1ed37e630ae9220aae2df4d7ab))
+* implement semantic versioning with GitLab CI/CD; add version endpoint and app_version() helper function ([d9b1212](https://github.com/AshrafAmir96/citadel/commit/d9b12123e5737bbe1a81ca1f44867ab03e580fd8))
+* Refactor authentication logic and update testing environment configuration ([c83abfe](https://github.com/AshrafAmir96/citadel/commit/c83abfe613046497d1fdc422a154e208178557a4))
+* update CHANGELOG.md with details for version 1.1.0, including new features, changes, enhancements, and documentation updates ([90b7da0](https://github.com/AshrafAmir96/citadel/commit/90b7da09db4d99621a3115d219933cced537ac50))
+* Update CI/CD configurations for PHPStan with custom settings and add phpstan.neon file ([46de939](https://github.com/AshrafAmir96/citadel/commit/46de9395e7a06e4022ee3d7333eef51c98f47319))
+* Update CI/CD pipeline to install semantic-release dependencies ([2b1e329](https://github.com/AshrafAmir96/citadel/commit/2b1e32920e63fc229c9a7f5d8c988154525fa36e))
+* Update CI/CD pipeline to use npx for semantic-release and install dependencies ([8c2155a](https://github.com/AshrafAmir96/citadel/commit/8c2155ada0981b11f57dcae907efe25e6728bf2a))
+* update entrypoint script for stable database migrations and cache clearing; add deployment script for Docker ([73f879c](https://github.com/AshrafAmir96/citadel/commit/73f879c557589971630e59769000ad23e293a159))
+* Update media upload permissions and enhance media retrieval with pagination support ([df37797](https://github.com/AshrafAmir96/citadel/commit/df377975562fa0b6636e168994d75e4521e2e15c))
+
 # Changelog
 
 All notable changes to the Citadel Laravel Boilerplate will be documented in this file.
