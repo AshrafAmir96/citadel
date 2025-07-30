@@ -51,14 +51,14 @@ class UserController extends Controller
                 'updated_at',
             ])
             ->allowedFields([
-                'users' => ['id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at'],
+                'id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at',
             ])
             ->allowedIncludes([
                 'roles',
                 'permissions',
             ])
             ->defaultSort('-created_at')
-            ->paginate($request->get('page.size', 15))
+            ->paginate($request->get('page_size', 15))
             ->appends($request->query());
 
         return response()->json([
@@ -102,7 +102,7 @@ class UserController extends Controller
 
         $userData = QueryBuilder::for(User::where('id', $id))
             ->allowedFields([
-                'users' => ['id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at'],
+                'id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at',
             ])
             ->allowedIncludes([
                 'roles',
