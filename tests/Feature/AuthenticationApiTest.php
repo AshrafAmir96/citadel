@@ -5,6 +5,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+beforeEach(function () {
+    // Set up Passport for authentication tests
+    $this->setUpPassport();
+});
+
 describe('Authentication API', function () {
     test('user can register with valid data', function () {
         $userData = [
