@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Laravel\Passport\RefreshTokenRepository;
-use Laravel\Passport\TokenRepository;
 
 class AuthController extends Controller
 {
@@ -112,14 +110,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        $token = $request->user()->token();
-
-        // Revoke the token
-        $tokenRepository = app(TokenRepository::class);
-        $refreshTokenRepository = app(RefreshTokenRepository::class);
-
-        $tokenRepository->revokeAccessToken($token->id);
-        $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($token->id);
+        $request->user()->token()->revoke();
 
         return response()->json([
             'success' => true,
