@@ -28,6 +28,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatic configuration backup and restoration
   - Status checking for current CI/CD setup
   - Platform-specific semantic release configuration management
+- **🏷️ Role Management Command**: `citadel:get-role` for comprehensive role information
+  - Beautiful table output with role icons and color coding
+  - Multiple output formats (table, JSON, plain text)
+  - Detailed permission breakdowns grouped by categories
+  - Role statistics including user counts and usage analytics
+  - Filtering options by role name and guard
+  - Docker and Laravel Sail compatibility
 - Initial release preparation for Packagist
 
 ## [1.2.0] - 2025-07-29

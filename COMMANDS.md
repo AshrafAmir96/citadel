@@ -141,6 +141,155 @@ Before using this command, ensure that:
 3. **Spatie Permission**: The package should be properly configured
 4. **Database connection**: Ensure your database is accessible
 
+## 🏷️ Role Management Command
+
+The `citadel:get-role` command provides comprehensive role information including permissions, user counts, and detailed statistics.
+
+### Command Signature
+
+```bash
+php artisan citadel:get-role [options]
+```
+
+### Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `--format` | string | table | Output format: table, json, or plain |
+| `--with-permissions` | flag | false | Include permissions for each role |
+| `--with-users` | flag | false | Include user count for each role |
+| `--role` | string | null | Filter by specific role name |
+| `--guard` | string | api | Filter by guard (uses permission_guard() helper) |
+
+### Usage Examples
+
+#### Basic Usage
+```bash
+# Show all roles in table format
+php artisan citadel:get-role
+
+# Show roles with user counts
+php artisan citadel:get-role --with-users
+
+# Show roles with permissions
+php artisan citadel:get-role --with-permissions
+
+# Show complete information
+php artisan citadel:get-role --with-users --with-permissions
+```
+
+#### Filtering Options
+```bash
+# Filter by specific role
+php artisan citadel:get-role --role="Super Admin"
+
+# Filter by guard
+php artisan citadel:get-role --guard=web
+
+# Combine filters
+php artisan citadel:get-role --role="Admin" --guard=api --with-permissions
+```
+
+#### Output Formats
+```bash
+# Table format (default) - beautiful formatted table
+php artisan citadel:get-role --format=table
+
+# JSON format - for API integration or scripting
+php artisan citadel:get-role --format=json --with-permissions
+
+# Plain text format - for logs or simple output
+php artisan citadel:get-role --format=plain --with-users
+```
+
+#### Docker Environment
+```bash
+# Interactive mode
+docker-compose exec app php artisan citadel:get-role --with-permissions
+
+# Complete information
+docker-compose exec app php artisan citadel:get-role --with-users --with-permissions
+```
+
+### Command Features
+
+#### 🎨 Beautiful Table Output
+- **Role Icons**: Visual icons for different role types (👑 Super Admin, 🛡️ Admin, etc.)
+- **Color Coding**: Important information highlighted with colors
+- **Clean Formatting**: Professional table layout with proper alignment
+- **Statistics Summary**: Total counts and usage analytics
+
+#### 📊 Comprehensive Statistics
+- **Role Analytics**: Total roles, users, and permissions
+- **Usage Metrics**: Most and least used roles
+- **Permission Breakdown**: Grouped by categories
+- **User Distribution**: Users per role analysis
+
+#### 🔍 Detailed Information
+- **Permission Grouping**: Permissions categorized by type (users.*, posts.*, etc.)
+- **User Lists**: Email addresses of users with each role (in JSON/plain formats)
+- **Creation Dates**: When roles were created
+- **Guard Information**: Which guard each role belongs to
+
+### Sample Output
+
+#### Table Format
+```bash
+🏰 Citadel Role Management System
+═══════════════════════════════════
+
+📋 Guard: api
+📊 Total Roles: 3
+
++----+------------------+-------------+-------------+--------------------+
+| ID | Role Name        | Created     | Users Count | Permissions Count  |
++----+------------------+-------------+-------------+--------------------+
+| 1  | 👑 Super Admin   | Jul 29, 2025| 2           | 45                 |
+| 2  | 🛡️ Admin         | Jul 29, 2025| 5           | 23                 |
+| 3  | 👤 User          | Jul 29, 2025| 150         | 8                  |
++----+------------------+-------------+-------------+--------------------+
+
+🔐 Detailed Permissions
+────────────────────────
+📋 Super Admin (45 permissions):
+  📁 users:
+    • users.create
+    • users.read
+    • users.update
+    • users.delete
+  📁 posts:
+    • posts.create
+    • posts.publish
+    • posts.moderate
+
+📊 Role Statistics
+─────────────────
+• Total roles: 3
+• Total users across all roles: 157
+• Total permissions across all roles: 76
+• Roles with users: 3
+• Roles with permissions: 3
+• Most used role: User (150 users)
+• Least used role: Super Admin (2 users)
+```
+
+#### JSON Format
+```json
+[
+  {
+    "id": 1,
+    "name": "Super Admin",
+    "guard_name": "api",
+    "created_at": "2025-07-29T10:30:00.000000Z",
+    "updated_at": "2025-07-29T10:30:00.000000Z",
+    "users_count": 2,
+    "users": ["admin@example.com", "superadmin@example.com"],
+    "permissions_count": 45,
+    "permissions": ["users.create", "users.read", "users.update", "..."]
+  }
+]
+```
+
 ### Troubleshooting
 
 #### Common Issues
@@ -212,8 +361,25 @@ php artisan permission:show
 The Citadel boilerplate will include additional commands in future versions:
 
 - `citadel:user:deactivate` - Deactivate user accounts
-- `citadel:role:assign` - Assign roles to users
+- `citadel:role:assign` - Assign roles to users  
 - `citadel:permissions:sync` - Synchronize permissions
+- `citadel:permissions:create` - Create new permissions
 - `citadel:backup:create` - Create system backups
+- `citadel:user:export` - Export user data
+- `citadel:role:create` - Create new roles interactively
 
-Stay tuned for updates!
+## 📋 Command Index
+
+### Available Commands
+- [`citadel:create-super-admin`](#-super-admin-creation-command) - Create super administrator users
+- [`citadel:get-role`](#️-role-management-command) - Display roles with permissions and statistics
+
+### Quick Reference
+```bash
+# List all citadel commands
+php artisan list citadel
+
+# Get help for specific command  
+php artisan citadel:create-super-admin --help
+php artisan citadel:get-role --help
+```

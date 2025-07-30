@@ -30,6 +30,15 @@ docker-compose exec app php artisan citadel:create-super-admin \
   --name="Super Admin"
 ```
 
+### Step 4: Verify Setup
+```bash
+# Check available roles
+docker-compose exec app php artisan citadel:get-role --with-users
+
+# Test API version endpoint
+curl http://localhost:8000/api/version
+```
+
 **🎉 Done! Access your API at http://localhost:8000**
 
 ### Quick Test

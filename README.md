@@ -181,7 +181,8 @@ app/Http/Controllers/Api/
 ### Artisan Commands
 ```
 app/Console/Commands/
-└── SuperAdminCreation.php      # Interactive super admin creation command
+├── SuperAdminCreation.php      # Interactive super admin creation command
+└── GetRoleList.php             # Role management and statistics command
 ```
 
 ### Documentation Structure
