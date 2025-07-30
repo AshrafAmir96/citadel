@@ -27,7 +27,7 @@ class MediaController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'file' => 'required|file|max:10240', // 10MB max
+            'file' => 'required|file|max:10240|mimes:jpeg,jpg,png,gif,pdf,doc,docx,txt,zip,mp3,mp4,avi', // 10MB max with allowed types
             'collection' => 'sometimes|string|max:255',
         ]);
 
@@ -92,7 +92,22 @@ class MediaController extends Controller
         }
 
         $user = $request->user();
-        $media = $user->getMedia();
+
+        // Get media query
+        $mediaQuery = Media::where('model_id', $user->id)
+            ->where('model_type', get_class($user));
+
+        // Filter by collection if specified
+        if ($request->has('collection')) {
+            $mediaQuery->where('collection_name', $request->input('collection'));
+        }
+
+        // Pagination support
+        $limit = $request->input('limit', 15);
+        $page = $request->input('page', 1);
+        $offset = ($page - 1) * $limit;
+
+        $media = $mediaQuery->offset($offset)->limit($limit)->get();
 
         $mediaData = $media->map(function ($item) {
             return [
@@ -131,14 +146,25 @@ class MediaController extends Controller
 
         $media = Media::find($id);
 
-        if (! $media || $media->model_id !== $request->user()->id) {
+        if (! $media) {
             return response()->json([
                 'success' => false,
                 'error' => [
                     'code' => 'MEDIA_NOT_FOUND',
-                    'message' => 'Media file not found or you do not have permission to delete it.',
+                    'message' => 'Media file not found.',
                 ],
             ], 404);
+        }
+
+        // Check if the media belongs to the current user
+        if ((int) $media->model_id !== (int) $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => 'PERMISSION_DENIED',
+                    'message' => 'You do not have permission to delete this media file.',
+                ],
+            ], 403);
         }
 
         try {

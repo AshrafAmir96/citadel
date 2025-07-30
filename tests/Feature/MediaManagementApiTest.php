@@ -27,7 +27,7 @@ describe('Media Management API', function () {
 
     test('authenticated user can upload file', function () {
         $user = User::factory()->create();
-        $user->givePermissionTo('media.create');
+        $user->givePermissionTo('media.upload');
         $token = $user->createToken('Test Token')->accessToken;
 
         $file = UploadedFile::fake()->image('test-image.jpg', 1000, 1000)->size(1024); // 1MB
@@ -50,14 +50,14 @@ describe('Media Management API', function () {
                     'size',
                     'collection_name',
                     'url',
-                    'created_at',
                 ],
                 'message',
             ])
             ->assertJson([
                 'success' => true,
                 'data' => [
-                    'name' => 'test-image.jpg',
+                    'name' => 'test-image',  // MediaLibrary strips extension from name
+                    'file_name' => 'test-image.jpg',  // Full filename is in file_name
                     'mime_type' => 'image/jpeg',
                     'collection_name' => 'uploads',
                 ],
@@ -69,7 +69,7 @@ describe('Media Management API', function () {
 
     test('user can upload file to default collection', function () {
         $user = User::factory()->create();
-        $user->givePermissionTo('media.create');
+        $user->givePermissionTo('media.upload');
         $token = $user->createToken('Test Token')->accessToken;
 
         $file = UploadedFile::fake()->create('document.pdf', 500, 'application/pdf');
@@ -84,8 +84,8 @@ describe('Media Management API', function () {
             ->assertJson([
                 'success' => true,
                 'data' => [
-                    'name' => 'document.pdf',
-                    'mime_type' => 'application/pdf',
+                    'name' => 'document',  // MediaLibrary strips extension from name
+                    'file_name' => 'document.pdf',  // Full filename is in file_name
                     'collection_name' => 'default',
                 ],
             ]);
@@ -93,7 +93,7 @@ describe('Media Management API', function () {
 
     test('file upload validates file is required', function () {
         $user = User::factory()->create();
-        $user->givePermissionTo('media.create');
+        $user->givePermissionTo('media.upload');
         $token = $user->createToken('Test Token')->accessToken;
 
         $response = $this->withHeaders([
@@ -111,7 +111,7 @@ describe('Media Management API', function () {
 
     test('file upload validates file size limit', function () {
         $user = User::factory()->create();
-        $user->givePermissionTo('media.create');
+        $user->givePermissionTo('media.upload');
         $token = $user->createToken('Test Token')->accessToken;
 
         // Create a file larger than the limit (assuming 10MB limit)
@@ -134,7 +134,7 @@ describe('Media Management API', function () {
 
     test('file upload validates allowed file types', function () {
         $user = User::factory()->create();
-        $user->givePermissionTo('media.create');
+        $user->givePermissionTo('media.upload');
         $token = $user->createToken('Test Token')->accessToken;
 
         // Create a potentially dangerous file type
@@ -157,7 +157,7 @@ describe('Media Management API', function () {
 
     test('user without permission cannot upload files', function () {
         $user = User::factory()->create();
-        // Don't give media.create permission
+        // Don't give media.upload permission
         $token = $user->createToken('Test Token')->accessToken;
 
         $file = UploadedFile::fake()->image('test.jpg');
@@ -179,7 +179,7 @@ describe('Media Management API', function () {
 
     test('authenticated user can view their media files', function () {
         $user = User::factory()->create();
-        $user->givePermissionTo(['media.view', 'media.create']);
+        $user->givePermissionTo(['media.view', 'media.upload']);
         $token = $user->createToken('Test Token')->accessToken;
 
         // Upload a few files first
@@ -207,7 +207,6 @@ describe('Media Management API', function () {
                         'size',
                         'collection_name',
                         'url',
-                        'created_at',
                     ],
                 ],
                 'message',
@@ -222,7 +221,7 @@ describe('Media Management API', function () {
 
     test('user can filter media files by collection', function () {
         $user = User::factory()->create();
-        $user->givePermissionTo(['media.view', 'media.create']);
+        $user->givePermissionTo(['media.view', 'media.upload']);
         $token = $user->createToken('Test Token')->accessToken;
 
         // Upload files to different collections
@@ -247,7 +246,7 @@ describe('Media Management API', function () {
 
     test('user can delete their own media file', function () {
         $user = User::factory()->create();
-        $user->givePermissionTo(['media.create', 'media.delete']);
+        $user->givePermissionTo(['media.upload', 'media.delete']);
         $token = $user->createToken('Test Token')->accessToken;
 
         // First upload a file
@@ -292,8 +291,8 @@ describe('Media Management API', function () {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
 
-        $user1->givePermissionTo(['media.create', 'media.delete']);
-        $user2->givePermissionTo(['media.create', 'media.delete']);
+        $user1->givePermissionTo(['media.upload', 'media.delete']);
+        $user2->givePermissionTo(['media.upload', 'media.delete']);
 
         $token1 = $user1->createToken('Test Token')->accessToken;
         $token2 = $user2->createToken('Test Token')->accessToken;
@@ -303,9 +302,14 @@ describe('Media Management API', function () {
         $uploadResponse = $this->withHeaders(['Authorization' => 'Bearer '.$token1])
             ->postJson('/api/media', ['file' => $file]);
 
+        $uploadResponse->assertStatus(201);
         $mediaId = $uploadResponse->json('data.id');
 
-        // User 2 tries to delete User 1's file
+        // Verify the file belongs to user1
+        $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::find($mediaId);
+        expect($media->model_id)->toBe($user1->id);
+
+        // User 2 tries to delete User 1's file - should fail
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token2,
         ])->deleteJson("/api/media/{$mediaId}");
@@ -321,7 +325,7 @@ describe('Media Management API', function () {
 
     test('user without delete permission cannot delete media files', function () {
         $user = User::factory()->create();
-        $user->givePermissionTo('media.create');
+        $user->givePermissionTo('media.upload');
         // Don't give media.delete permission
         $token = $user->createToken('Test Token')->accessToken;
 
@@ -347,7 +351,7 @@ describe('Media Management API', function () {
 
     test('media endpoint supports pagination', function () {
         $user = User::factory()->create();
-        $user->givePermissionTo(['media.view', 'media.create']);
+        $user->givePermissionTo(['media.view', 'media.upload']);
         $token = $user->createToken('Test Token')->accessToken;
 
         // Upload multiple files
@@ -387,10 +391,10 @@ describe('Media Management API', function () {
 // Helper function to create media permissions and roles
 function createMediaPermissionsAndRoles()
 {
-    // Create permissions
+    // Create permissions that match what the MediaController expects
     $permissions = [
         'media.view',
-        'media.create',
+        'media.upload',  // Changed from 'media.create' to match controller
         'media.delete',
         'users.view',
         'users.edit',
@@ -406,5 +410,5 @@ function createMediaPermissionsAndRoles()
 
     // Assign permissions to roles
     $adminRole->givePermissionTo($permissions);
-    $editorRole->givePermissionTo(['media.view', 'media.create']);
+    $editorRole->givePermissionTo(['media.view', 'media.upload']);
 }

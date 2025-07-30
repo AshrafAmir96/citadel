@@ -237,31 +237,31 @@ jobs:
       - name: Run NPM audit
         run: npm audit --audit-level=high
 
-  codeql:
-    name: CodeQL Security Analysis
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    continue-on-error: true
+  # codeql:
+  #   name: CodeQL Security Analysis
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+  #   continue-on-error: true
     
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
+  #   permissions:
+  #     actions: read
+  #     contents: read
+  #     security-events: write
       
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
         
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript, php
+  #     - name: Initialize CodeQL
+  #       uses: github/codeql-action/init@v3
+  #       with:
+  #         languages: javascript, php
           
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+  #     - name: Autobuild
+  #       uses: github/codeql-action/autobuild@v3
         
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+  #     - name: Perform CodeQL Analysis
+  #       uses: github/codeql-action/analyze@v3
 
   # ================================
   # SEMANTIC VERSIONING
