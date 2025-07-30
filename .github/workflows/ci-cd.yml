@@ -103,11 +103,8 @@ jobs:
           php artisan key:generate
           php artisan config:cache
           
-      - name: Install PHPStan
-        run: composer require --dev phpstan/phpstan
-        
       - name: Run PHPStan
-        run: ./vendor/bin/phpstan analyse --memory-limit=2G
+        run: ./vendor/bin/phpstan analyse --configuration=phpstan.neon --memory-limit=2G
 
   test:
     name: Unit and Feature Tests

@@ -1,0 +1,24 @@
+parameters:
+    level: 5
+    paths:
+        - app
+        - config
+        - routes
+    excludePaths:
+        - database/migrations
+        - database/factories
+        - database/seeders
+        - routes/console.php
+    ignoreErrors:
+        - '#Call to an undefined static method .*::where\(\)#'
+        - '#Call to an undefined static method .*::find\(\)#'
+        - '#Call to an undefined static method .*::create\(\)#'
+        - '#Call to an undefined static method .*::firstOrCreate\(\)#'
+        - '#Access to an undefined property Illuminate\\Http\\Request::\$.*#'
+        - '#Access to an undefined property .*::\$.*#'
+        - '#Class .* not found#'
+        - '#Call to an undefined method Illuminate\\Contracts\\Auth\\Authenticatable::createToken\(\)#'
+        - '#Call to an undefined method Illuminate\\Contracts\\Auth\\Factory::user\(\)#'
+        - '#Call to an undefined method Laravel\\Passport\\TokenRepository::revokeAccessToken\(\)#'
+        - '#Call to method revokeRefreshTokensByAccessTokenId\(\) on an unknown class Laravel\\Passport\\RefreshTokenRepository#'
+        - '#Call to an undefined method Laravel\\Scout\\Builder.*::skip\(\)#'

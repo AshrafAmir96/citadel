@@ -47,6 +47,32 @@ Current version: `{{ app_version() }}`
 - **Release Notes**: See [CHANGELOG.md](CHANGELOG.md) for version history
 - **CI/CD Switcher**: Use `scripts/ci-switch.sh` to switch between platforms
 
+## 🛠️ Development Tools
+
+### Code Quality
+- **PHP CS Fixer (Pint)**: Automatic code formatting
+- **PHPStan with Larastan**: Static analysis for Laravel
+- **Pest**: Modern PHP testing framework
+- **Pre-commit hooks**: Automated quality checks
+
+### Available Scripts
+```bash
+# Code formatting
+composer run pint
+
+# Static analysis  
+composer run analyse
+
+# Run tests
+composer run test
+
+# All quality checks
+composer run quality
+
+# Development server with hot reload
+composer run dev
+```
+
 ## ✨ Features
 
 ### Option 1: Docker (Recommended)
