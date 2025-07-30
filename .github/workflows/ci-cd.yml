@@ -1,0 +1,587 @@
+# GitHub Actions CI/CD Pipeline for Citadel Laravel Backend Boilerplate
+# This pipeline includes testing, security checks, building, semantic versioning, and deployment stages
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  release:
+    types: [ published ]
+
+env:
+  # Database configuration for testing
+  DB_CONNECTION: sqlite
+  DB_DATABASE: ":memory:"
+  
+  # Application configuration
+  APP_ENV: testing
+  APP_DEBUG: "false"
+  APP_KEY: base64:cUPsjQyTtGKKGKB7F+yIIBVvfTT7bE4LJmCO1dw1hBE=
+  
+  # Cache configuration
+  CACHE_DRIVER: array
+  SESSION_DRIVER: array
+  QUEUE_CONNECTION: sync
+  
+  # Node.js and PHP versions
+  NODE_VERSION: "18"
+  PHP_VERSION: "8.2"
+
+jobs:
+  # ================================
+  # TEST JOBS
+  # ================================
+  
+  code-style:
+    name: Code Style Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: pdo, pdo_sqlite, bcmath, gd, zip, intl
+          coverage: none
+          
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+          
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
+        
+      - name: Setup Laravel environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan config:cache
+          
+      - name: Run PHP CS Fixer
+        run: composer run pint -- --test
+
+  phpstan:
+    name: PHPStan Static Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    continue-on-error: true
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: pdo, pdo_sqlite, bcmath, gd, zip, intl
+          coverage: none
+          
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+          
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
+        
+      - name: Setup Laravel environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan config:cache
+          
+      - name: Install PHPStan
+        run: composer require --dev phpstan/phpstan
+        
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan analyse --memory-limit=2G
+
+  test:
+    name: Unit and Feature Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: pdo, pdo_sqlite, bcmath, gd, zip, intl
+          coverage: xdebug
+          
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+          
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
+        
+      - name: Setup Laravel environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan config:cache
+          
+      - name: Run database migrations
+        run: php artisan migrate --force
+        
+      - name: Install Passport keys
+        run: php artisan passport:keys --force
+        
+      - name: Run tests with coverage
+        run: php artisan test --coverage --min=80
+        
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+
+  frontend-test:
+    name: Frontend Build Test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build frontend assets
+        run: npm run build
+        
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: public/build/
+          retention-days: 7
+
+  # ================================
+  # SECURITY JOBS
+  # ================================
+  
+  composer-audit:
+    name: Composer Security Audit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    continue-on-error: true
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: pdo, pdo_sqlite, bcmath, gd, zip, intl
+          coverage: none
+          
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+          
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
+        
+      - name: Run Composer audit
+        run: composer audit
+
+  npm-audit:
+    name: NPM Security Audit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    continue-on-error: true
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run NPM audit
+        run: npm audit --audit-level=high
+
+  codeql:
+    name: CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    continue-on-error: true
+    
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript, php
+          
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+        
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+  # ================================
+  # SEMANTIC VERSIONING
+  # ================================
+  
+  semantic-release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [test, frontend-test, code-style]
+    
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      
+    outputs:
+      version: ${{ steps.semantic.outputs.version }}
+      new-release-published: ${{ steps.semantic.outputs.new-release-published }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install semantic-release
+        run: |
+          npm install -g semantic-release
+          npm install -g @semantic-release/changelog
+          npm install -g @semantic-release/git
+          npm install -g @semantic-release/github
+          
+      - name: Run semantic-release
+        id: semantic
+        run: semantic-release --extends ./.releaserc.github.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Create VERSION file
+        if: steps.semantic.outputs.new-release-published == 'true'
+        run: echo "${{ steps.semantic.outputs.version }}" > VERSION
+        
+      - name: Upload version artifact
+        if: steps.semantic.outputs.new-release-published == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: version-info
+          path: |
+            VERSION
+            CHANGELOG.md
+          retention-days: 7
+
+  version-info:
+    name: Generate Version Info
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
+    
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Generate version
+        id: version
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.1.0")
+          else
+            VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.1.0")
+            BRANCH_NAME=$(echo "${{ github.head_ref || github.ref_name }}" | sed 's/[^a-zA-Z0-9]/-/g')
+            VERSION="${VERSION}-${BRANCH_NAME}.${{ github.sha }}"
+          fi
+          echo $VERSION > VERSION
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Generated version: $VERSION"
+          
+      - name: Upload version artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: version-info
+          path: VERSION
+          retention-days: 7
+
+  # ================================
+  # BUILD JOB
+  # ================================
+  
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'release'
+    needs: [test, frontend-test, semantic-release, version-info]
+    # Run if semantic-release OR version-info completed (one will be skipped)
+    continue-on-error: false
+    
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: pdo, pdo_sqlite, bcmath, gd, zip, intl
+          coverage: none
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Download version artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: version-info
+        continue-on-error: true
+        
+      - name: Get version
+        id: get-version
+        run: |
+          if [ -f "VERSION" ]; then
+            VERSION=$(cat VERSION)
+          else
+            VERSION="${{ github.sha }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
+          
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+          
+      - name: Install Composer dependencies
+        run: composer install --optimize-autoloader --no-dev --prefer-dist --no-ansi --no-interaction --no-progress
+        
+      - name: Install NPM dependencies
+        run: npm ci
+        
+      - name: Build frontend assets
+        run: npm run build
+        
+      - name: Set version in application
+        run: echo "APP_VERSION=${{ steps.get-version.outputs.version }}" >> .env.production
+        
+      - name: Optimize Laravel for production
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan optimize
+          
+      - name: Create deployment archive
+        run: |
+          tar -czf citadel-${{ steps.get-version.outputs.version }}.tar.gz \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='.github' \
+            --exclude='.gitignore' \
+            .
+          echo "${{ steps.get-version.outputs.version }}" > RELEASE_VERSION
+          
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            citadel-${{ steps.get-version.outputs.version }}.tar.gz
+            RELEASE_VERSION
+            VERSION
+          retention-days: 7
+
+  # ================================
+  # DEPLOYMENT JOBS
+  # ================================
+  
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    needs: [build]
+    environment: 
+      name: staging
+      url: ${{ vars.STAGING_URL }}
+      
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          
+      - name: Get version
+        id: get-version
+        run: |
+          VERSION=$(cat RELEASE_VERSION 2>/dev/null || echo "${{ github.sha }}")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Deploying version: $VERSION"
+          
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          
+      - name: Add SSH known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ vars.STAGING_SERVER }} >> ~/.ssh/known_hosts
+          
+      - name: Extract and upload build
+        run: |
+          tar -xzf citadel-${{ steps.get-version.outputs.version }}.tar.gz
+          rsync -avz --delete --exclude='.env' ./ ${{ vars.STAGING_USER }}@${{ vars.STAGING_SERVER }}:${{ vars.STAGING_PATH }}/
+          
+      - name: Run deployment commands
+        run: |
+          ssh ${{ vars.STAGING_USER }}@${{ vars.STAGING_SERVER }} "cd ${{ vars.STAGING_PATH }} && php artisan migrate --force"
+          ssh ${{ vars.STAGING_USER }}@${{ vars.STAGING_SERVER }} "cd ${{ vars.STAGING_PATH }} && php artisan passport:keys --force"
+          ssh ${{ vars.STAGING_USER }}@${{ vars.STAGING_SERVER }} "cd ${{ vars.STAGING_PATH }} && php artisan queue:restart"
+          ssh ${{ vars.STAGING_USER }}@${{ vars.STAGING_SERVER }} "cd ${{ vars.STAGING_PATH }} && php artisan config:cache"
+          ssh ${{ vars.STAGING_USER }}@${{ vars.STAGING_SERVER }} "cd ${{ vars.STAGING_PATH }} && php artisan optimize"
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || github.event_name == 'release'
+    needs: [build]
+    environment: 
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+      
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          
+      - name: Get version
+        id: get-version
+        run: |
+          VERSION=$(cat RELEASE_VERSION 2>/dev/null || echo "${{ github.sha }}")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Deploying version: $VERSION"
+          
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
+          
+      - name: Add SSH known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ vars.PRODUCTION_SERVER }} >> ~/.ssh/known_hosts
+          
+      - name: Create backup
+        run: |
+          ssh ${{ vars.PRODUCTION_USER }}@${{ vars.PRODUCTION_SERVER }} \
+            "cd ${{ vars.PRODUCTION_PATH }} && tar -czf ../backup-$(date +%Y%m%d_%H%M%S).tar.gz ."
+          
+      - name: Extract and upload build
+        run: |
+          tar -xzf citadel-${{ steps.get-version.outputs.version }}.tar.gz
+          rsync -avz --delete \
+            --exclude='.env' \
+            --exclude='storage/app' \
+            --exclude='storage/logs' \
+            ./ ${{ vars.PRODUCTION_USER }}@${{ vars.PRODUCTION_SERVER }}:${{ vars.PRODUCTION_PATH }}/
+          
+      - name: Run deployment commands
+        run: |
+          ssh ${{ vars.PRODUCTION_USER }}@${{ vars.PRODUCTION_SERVER }} "cd ${{ vars.PRODUCTION_PATH }} && php artisan down --render='errors::503'"
+          ssh ${{ vars.PRODUCTION_USER }}@${{ vars.PRODUCTION_SERVER }} "cd ${{ vars.PRODUCTION_PATH }} && php artisan migrate --force"
+          ssh ${{ vars.PRODUCTION_USER }}@${{ vars.PRODUCTION_SERVER }} "cd ${{ vars.PRODUCTION_PATH }} && php artisan passport:keys --force"
+          ssh ${{ vars.PRODUCTION_USER }}@${{ vars.PRODUCTION_SERVER }} "cd ${{ vars.PRODUCTION_PATH }} && php artisan queue:restart"
+          ssh ${{ vars.PRODUCTION_USER }}@${{ vars.PRODUCTION_SERVER }} "cd ${{ vars.PRODUCTION_PATH }} && php artisan config:cache"
+          ssh ${{ vars.PRODUCTION_USER }}@${{ vars.PRODUCTION_SERVER }} "cd ${{ vars.PRODUCTION_PATH }} && php artisan optimize"
+          ssh ${{ vars.PRODUCTION_USER }}@${{ vars.PRODUCTION_SERVER }} "cd ${{ vars.PRODUCTION_PATH }} && php artisan up"
+
+  # ================================
+  # SCHEDULED JOBS
+  # ================================
+  
+  backup:
+    name: Database Backup
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
+          
+      - name: Add SSH known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ vars.PRODUCTION_SERVER }} >> ~/.ssh/known_hosts
+          
+      - name: Run backup
+        run: |
+          ssh ${{ vars.PRODUCTION_USER }}@${{ vars.PRODUCTION_SERVER }} \
+            "cd ${{ vars.PRODUCTION_PATH }} && php artisan backup:run"

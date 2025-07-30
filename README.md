@@ -40,10 +40,12 @@ Get Citadel running in 5 minutes! See [QUICKSTART.md](QUICKSTART.md) for detaile
 
 Current version: `{{ app_version() }}`
 
-- **Semantic Versioning**: Automated version management with GitLab CI/CD
+- **Semantic Versioning**: Automated version management with CI/CD
+- **GitLab CI/CD**: See [SEMANTIC_VERSIONING.md](SEMANTIC_VERSIONING.md) 
+- **GitHub Actions**: See [GITHUB_ACTIONS.md](GITHUB_ACTIONS.md)
 - **Version API**: `GET /api/version` for version information
 - **Release Notes**: See [CHANGELOG.md](CHANGELOG.md) for version history
-- **Versioning Guide**: See [SEMANTIC_VERSIONING.md](SEMANTIC_VERSIONING.md) for commit conventions
+- **CI/CD Switcher**: Use `scripts/ci-switch.sh` to switch between platforms
 
 ## ✨ Features
 
@@ -190,6 +192,7 @@ app/Console/Commands/
 ├── COMMANDS.md                # Artisan commands reference
 ├── DEPLOYMENT.md              # Production deployment guide
 ├── SEMANTIC_VERSIONING.md     # Semantic versioning with GitLab CI/CD
+├── GITHUB_ACTIONS.md          # GitHub Actions CI/CD setup
 ├── CHANGELOG.md               # Version history and changes
 └── CONTRIBUTING.md            # Contribution guidelines
 ```
@@ -198,6 +201,42 @@ app/Console/Commands/
 - **`config/citadel.php`** - Centralized configuration
 - **`app/helpers.php`** - Helper functions with autoloading
 - **`.env.citadel.example`** - Environment variable examples
+
+## 🚀 CI/CD Integration
+
+Citadel supports both **GitLab CI/CD** and **GitHub Actions** with identical functionality:
+
+### 🦊 GitLab CI/CD
+- **Configuration**: `.gitlab-ci.yml`
+- **Semantic Release**: `.releaserc.json`
+- **Documentation**: [SEMANTIC_VERSIONING.md](SEMANTIC_VERSIONING.md)
+- **Features**: Automated testing, security scans, semantic versioning, multi-environment deployment
+
+### 🐙 GitHub Actions  
+- **Configuration**: `.github/workflows/ci-cd.yml`
+- **Semantic Release**: `.releaserc.github.json`
+- **Documentation**: [GITHUB_ACTIONS.md](GITHUB_ACTIONS.md)
+- **Features**: Automated testing, CodeQL security, semantic versioning, environment protection
+
+### 🔄 Platform Switching
+```bash
+# Switch to GitLab CI/CD
+./scripts/ci-switch.sh gitlab
+
+# Switch to GitHub Actions
+./scripts/ci-switch.sh github
+
+# Check current status
+./scripts/ci-switch.sh status
+```
+
+### 🏷️ Semantic Versioning
+Both platforms use conventional commits for automatic version management:
+```bash
+feat: add new feature      # Minor version bump (1.0.0 → 1.1.0)
+fix: resolve bug          # Patch version bump (1.0.0 → 1.0.1)  
+feat!: breaking change    # Major version bump (1.0.0 → 2.0.0)
+```
 
 ## 🔧 Available Commands
 

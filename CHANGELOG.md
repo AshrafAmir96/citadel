@@ -16,6 +16,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automated changelog generation and GitLab releases
   - Version-aware deployment process with versioned artifacts
   - Comprehensive semantic versioning documentation ([SEMANTIC_VERSIONING.md](SEMANTIC_VERSIONING.md))
+- **🐙 GitHub Actions Integration**: Complete CI/CD pipeline for GitHub repositories
+  - Mirror functionality of GitLab CI/CD with GitHub-native features
+  - Automated testing, security scanning, and deployment workflows
+  - GitHub-specific semantic release configuration
+  - Environment protection with manual approval for production
+  - CodeQL security analysis and dependency auditing
+  - Comprehensive GitHub Actions documentation ([GITHUB_ACTIONS.md](GITHUB_ACTIONS.md))
+- **🔄 CI/CD Platform Switcher**: Utility script for switching between GitLab and GitHub CI/CD
+  - Easy switching between GitLab CI/CD and GitHub Actions
+  - Automatic configuration backup and restoration
+  - Status checking for current CI/CD setup
+  - Platform-specific semantic release configuration management
 - Initial release preparation for Packagist
 
 ## [1.2.0] - 2025-07-29
