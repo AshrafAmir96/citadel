@@ -3,6 +3,8 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Laravel\Passport\Passport;
 
 abstract class TestCase extends BaseTestCase
@@ -17,17 +19,32 @@ abstract class TestCase extends BaseTestCase
 
     protected function setUpPassport(): void
     {
-        // Check if oauth_clients table exists before trying to create a client
+        // Ensure we have a fresh database with migrations run
         try {
-            $this->artisan('passport:client', [
-                '--personal' => true,
-                '--name' => 'Test Personal Access Client',
-                '--provider' => 'users',
-            ]);
+            // Check if the table exists
+            if (!Schema::hasTable('oauth_clients')) {
+                // Run migrations if the table doesn't exist
+                $this->artisan('migrate', ['--force' => true]);
+            }
+            
+            // Check if a personal access client already exists
+            // Note: The newer Passport schema uses 'grant_types' column instead of separate boolean columns
+            $existingClient = DB::table('oauth_clients')
+                ->where('grant_types', 'like', '%personal_access%')
+                ->where('provider', 'users')
+                ->first();
+                
+            if (!$existingClient) {
+                // Create the client using the artisan command
+                $this->artisan('passport:client', [
+                    '--personal' => true,
+                    '--name' => 'Test Personal Access Client',
+                    '--provider' => 'users',
+                ])->assertExitCode(0);
+            }
         } catch (\Exception $e) {
-            // If passport tables don't exist, skip client creation
-            // This handles cases where migrations haven't run yet
-            return;
+            // If there's any error, try to provide more details
+            throw new \Exception("Failed to set up Passport: " . $e->getMessage(), 0, $e);
         }
     }
 }

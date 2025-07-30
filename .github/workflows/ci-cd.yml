@@ -144,9 +144,6 @@ jobs:
       - name: Install Passport keys
         run: php artisan passport:keys --force
         
-      - name: Create Passport client
-        run: php artisan passport:client --personal --name="Test Personal Access Client" --provider=users
-        
       - name: Run tests with coverage
         run: php artisan test --coverage --min=80
         
